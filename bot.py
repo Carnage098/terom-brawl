@@ -146,7 +146,8 @@ async def inscription(interaction: discord.Interaction):
 
 🎖️ Grade : Recrue
 📈 Points : 0
-        """
+        """,
+        ephemeral=True
     )
 
 # ==========================
@@ -179,7 +180,7 @@ async def profil(interaction: discord.Interaction):
     grade = get_grade(points)
 
     await interaction.response.send_message(
-        f"""
+    f"""
 👤 **{joueur[1]}**
 
 🎖️ Grade : {grade}
@@ -191,8 +192,9 @@ async def profil(interaction: discord.Interaction):
 🔥 Série : {joueur[5]}
 
 🪙 TeRomik Coins : {joueur[7]}
-"""
-    )
+""",
+    ephemeral=True
+)
 
 # ==========================
 # LANCEMENT
