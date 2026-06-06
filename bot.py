@@ -1,7 +1,7 @@
 import os
 import sqlite3
 import discord
-
+import random
 from discord.ext import commands
 from discord import app_commands
 
@@ -241,6 +241,27 @@ async def resultat(
             ephemeral=True
         )
         return
+
+    if adversaire.id == interaction.user.id:
+    await interaction.response.send_message(
+        "❌ Tu ne peux pas te défier toi-même.",
+        ephemeral=True
+    )
+    return
+
+    cursor.execute(
+    "SELECT * FROM joueurs WHERE user_id=?",
+    (str(adversaire.id),)
+)
+
+adversaire_db = cursor.fetchone()
+
+if not adversaire_db:
+    await interaction.response.send_message(
+        "❌ Cet adversaire n'est pas inscrit à TeRom-Brawl.",
+        ephemeral=True
+    )
+    return
 
     points_actuels = joueur[2]
     victoires = joueur[3]
