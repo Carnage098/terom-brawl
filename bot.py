@@ -243,77 +243,101 @@ async def resultat(
         return
 
     if adversaire.id == interaction.user.id:
-    await interaction.response.send_message(
-        "❌ Tu ne peux pas te défier toi-même.",
-        ephemeral=True
-    )
-    return
+        await interaction.response.send_message(
+            "❌ Tu ne peux pas te défier toi-même.",
+            ephemeral=True
+        )
+        return
 
     cursor.execute(
-    "SELECT * FROM joueurs WHERE user_id=?",
-    (str(adversaire.id),)
-)
-
-adversaire_db = cursor.fetchone()
-
-if not adversaire_db:
-    await interaction.response.send_message(
-        "❌ Cet adversaire n'est pas inscrit à TeRom-Brawl.",
-        ephemeral=True
+        "SELECT * FROM joueurs WHERE user_id=?",
+        (str(adversaire.id),)
     )
-    return
 
-    points_actuels = joueur[2]
-    victoires = joueur[3]
-    defaites = joueur[4]
-    serie = joueur[5]
+    adversaire_db = cursor.fetchone()
+
+    if not adversaire_db:
+        await interaction.response.send_message(
+            "❌ Cet adversaire n'est pas inscrit à TeRom-Brawl.",
+            ephemeral=True
+        )
+        return
+
+    # Données du déclarant
+    points_joueur = joueur[2]
+    victoires_joueur = joueur[3]
+    defaites_joueur = joueur[4]
+    serie_joueur = joueur[5]
+
+    # Données adversaire
+    points_adv = adversaire_db[2]
+    victoires_adv = adversaire_db[3]
+    defaites_adv = adversaire_db[4]
+    serie_adv = adversaire_db[5]
+
+    gain = random.randint(10, 100)
+    perte = random.randint(1, 50)
 
     if resultat.value == "victoire":
 
-        gain = random.randint(10, 100)
+        # Joueur gagne
+        points_joueur += gain
+        victoires_joueur += 1
+        serie_joueur += 1
 
-        points_actuels += gain
-        victoires += 1
-        serie += 1
+        # Adversaire perd
+        points_adv -= perte
+
+        if points_adv < 0:
+            points_adv = 0
+
+        defaites_adv += 1
+        serie_adv = 0
 
         message = f"""
 ⚔️ Duel enregistré
 
-🏆 Victoire contre {adversaire.mention}
+🏆 Gagnant : {interaction.user.mention}
+📈 +{gain} points
+
+💀 Perdant : {adversaire.mention}
+📉 -{perte} points
 
 🎮 Plateforme : {plateforme.name}
-
-📈 Gain : +{gain}
-
-📊 Total : {points_actuels}
 """
 
     else:
 
-        perte = random.randint(1, 50)
+        # Joueur perd
+        points_joueur -= perte
 
-        points_actuels -= perte
+        if points_joueur < 0:
+            points_joueur = 0
 
-        if points_actuels < 0:
-            points_actuels = 0
+        defaites_joueur += 1
+        serie_joueur = 0
 
-        defaites += 1
-        serie = 0
+        # Adversaire gagne
+        points_adv += gain
+        victoires_adv += 1
+        serie_adv += 1
 
         message = f"""
 ⚔️ Duel enregistré
 
-💀 Défaite contre {adversaire.mention}
+🏆 Gagnant : {adversaire.mention}
+📈 +{gain} points
+
+💀 Perdant : {interaction.user.mention}
+📉 -{perte} points
 
 🎮 Plateforme : {plateforme.name}
-
-📉 Perte : -{perte}
-
-📊 Total : {points_actuels}
 """
 
-    grade = get_grade(points_actuels)
+    grade_joueur = get_grade(points_joueur)
+    grade_adv = get_grade(points_adv)
 
+    # Mise à jour joueur
     cursor.execute("""
     UPDATE joueurs
     SET points=?,
@@ -323,14 +347,33 @@ if not adversaire_db:
         grade=?
     WHERE user_id=?
     """, (
-        points_actuels,
-        victoires,
-        defaites,
-        serie,
-        grade,
+        points_joueur,
+        victoires_joueur,
+        defaites_joueur,
+        serie_joueur,
+        grade_joueur,
         user_id
     ))
 
+    # Mise à jour adversaire
+    cursor.execute("""
+    UPDATE joueurs
+    SET points=?,
+        victoires=?,
+        defaites=?,
+        serie=?,
+        grade=?
+    WHERE user_id=?
+    """, (
+        points_adv,
+        victoires_adv,
+        defaites_adv,
+        serie_adv,
+        grade_adv,
+        str(adversaire.id)
+    ))
+
+    # Historique
     cursor.execute("""
     INSERT INTO matchs (
         joueur_id,
@@ -345,8 +388,12 @@ if not adversaire_db:
         str(adversaire.id),
         plateforme.value,
         resultat.value,
-        points_actuels
+        gain if resultat.value == "victoire" else -perte
     ))
+
+    conn.commit()
+
+    await interaction.response.send_message(message)
 
     conn.commit()
 
