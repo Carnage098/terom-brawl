@@ -178,8 +178,20 @@ async def profil(interaction: discord.Interaction):
 
     points = joueur[2]
     grade = get_grade(points)
+    victoires = joueur[3]
+defaites = joueur[4]
+
+total = victoires + defaites
+
+if total > 0:
+    ratio = round((victoires / total) * 100)
+else:
+    ratio = 0
+
 
     await interaction.response.send_message(
+    f"""
+await interaction.response.send_message(
     f"""
 👤 **{joueur[1]}**
 
@@ -189,13 +201,15 @@ async def profil(interaction: discord.Interaction):
 ✅ Victoires : {joueur[3]}
 ❌ Défaites : {joueur[4]}
 
+📊 Ratio : {ratio}%
+
 🔥 Série : {joueur[5]}
 
 🪙 TeRomik Coins : {joueur[7]}
 """,
     ephemeral=True
 )
-
+        
 # ==========================
 # LANCEMENT
 # ==========================
