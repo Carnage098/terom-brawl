@@ -197,5 +197,139 @@ async def profil(interaction: discord.Interaction):
 # ==========================
 # LANCEMENT
 # ==========================
+@bot.tree.command(
+    name="resultat",
+    description="Déclarer un résultat de duel"
+)
+@app_commands.describe(
+    resultat="Victoire ou Défaite",
+    plateforme="Plateforme utilisée",
+    adversaire="Ton adversaire"
+)
+@app_commands.choices(
+    resultat=[
+        app_commands.Choice(name="Victoire", value="victoire"),
+        app_commands.Choice(name="Défaite", value="defaite")
+    ],
+    plateforme=[
+        app_commands.Choice(name="YGO Omega", value="omega"),
+        app_commands.Choice(name="Dueling Book", value="duelingbook"),
+        app_commands.Choice(name="EDOPro", value="edopro"),
+        app_commands.Choice(name="Master Duel", value="masterduel"),
+        app_commands.Choice(name="Remote Duel", value="remote")
+    ]
+)
+async def resultat(
+    interaction: discord.Interaction,
+    resultat: app_commands.Choice[str],
+    plateforme: app_commands.Choice[str],
+    adversaire: discord.Member
+):
+
+    user_id = str(interaction.user.id)
+
+    cursor.execute(
+        "SELECT * FROM joueurs WHERE user_id=?",
+        (user_id,)
+    )
+
+    joueur = cursor.fetchone()
+
+    if not joueur:
+        await interaction.response.send_message(
+            "❌ Tu dois d'abord utiliser /inscription",
+            ephemeral=True
+        )
+        return
+
+    points_actuels = joueur[2]
+    victoires = joueur[3]
+    defaites = joueur[4]
+    serie = joueur[5]
+
+    if resultat.value == "victoire":
+
+        gain = random.randint(10, 100)
+
+        points_actuels += gain
+        victoires += 1
+        serie += 1
+
+        message = f"""
+⚔️ Duel enregistré
+
+🏆 Victoire contre {adversaire.mention}
+
+🎮 Plateforme : {plateforme.name}
+
+📈 Gain : +{gain}
+
+📊 Total : {points_actuels}
+"""
+
+    else:
+
+        perte = random.randint(1, 50)
+
+        points_actuels -= perte
+
+        if points_actuels < 0:
+            points_actuels = 0
+
+        defaites += 1
+        serie = 0
+
+        message = f"""
+⚔️ Duel enregistré
+
+💀 Défaite contre {adversaire.mention}
+
+🎮 Plateforme : {plateforme.name}
+
+📉 Perte : -{perte}
+
+📊 Total : {points_actuels}
+"""
+
+    grade = get_grade(points_actuels)
+
+    cursor.execute("""
+    UPDATE joueurs
+    SET points=?,
+        victoires=?,
+        defaites=?,
+        serie=?,
+        grade=?
+    WHERE user_id=?
+    """, (
+        points_actuels,
+        victoires,
+        defaites,
+        serie,
+        grade,
+        user_id
+    ))
+
+    cursor.execute("""
+    INSERT INTO matchs (
+        joueur_id,
+        adversaire_id,
+        plateforme,
+        resultat,
+        points
+    )
+    VALUES (?, ?, ?, ?, ?)
+    """, (
+        user_id,
+        str(adversaire.id),
+        plateforme.value,
+        resultat.value,
+        points_actuels
+    ))
+
+    conn.commit()
+
+    await interaction.response.send_message(message)
+
 
 bot.run(TOKEN)
