@@ -415,5 +415,40 @@ async def resultat(
 
     await interaction.response.send_message(message)
 
+@bot.tree.command(
+    name="classement",
+    description="Voir le classement TeRom-Brawl"
+)
+async def classement(interaction: discord.Interaction):
+
+    cursor.execute("""
+    SELECT pseudo, points, grade
+    FROM joueurs
+    ORDER BY points DESC
+    LIMIT 10
+    """)
+
+    joueurs = cursor.fetchall()
+
+    if not joueurs:
+        await interaction.response.send_message(
+            "❌ Aucun joueur inscrit."
+        )
+        return
+
+    message = "🏆 **Classement TeRom-Brawl**\n\n"
+
+    for index, joueur in enumerate(joueurs, start=1):
+
+        pseudo = joueur[0]
+        points = joueur[1]
+        grade = joueur[2]
+
+        message += (
+            f"**#{index}** • {pseudo}\n"
+            f"🎖️ {grade} | 📈 {points} pts\n\n"
+        )
+
+    await interaction.response.send_message(message)
 
 bot.run(TOKEN)
