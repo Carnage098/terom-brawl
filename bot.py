@@ -107,5 +107,8 @@ async def profil(interaction: discord.Interaction):
 """
     )
 
+from database import init_db
+
+init_db()
 
 bot.run(TOKEN)
