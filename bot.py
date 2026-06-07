@@ -1157,8 +1157,7 @@ await interaction.response.send_message(
 💰 Coins restants : {coins}
 """
     )
-
-    return
+return
     conn.commit()
     await interaction.response.send_message(
             f"""
