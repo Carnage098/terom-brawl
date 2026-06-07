@@ -30,7 +30,16 @@ CREATE TABLE IF NOT EXISTS joueurs (
     teromik_coins INTEGER DEFAULT 0
 )
 """)
-
+cursor.execute("""
+CREATE TABLE IF NOT EXISTS historique_duels (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    joueur1 TEXT,
+    joueur2 TEXT,
+    resultat TEXT,
+    plateforme TEXT,
+    date TEXT
+)
+""")
 try:
     cursor.execute("""
     ALTER TABLE joueurs
