@@ -1093,8 +1093,8 @@ async def acheter(
 
         conn.commit()
 
-        await interaction.response.send_message(
-            f"""
+await interaction.response.send_message(
+    f"""
 📈 Booster ouvert !
 
 🎲 Gain obtenu : +{gain} points
@@ -1103,7 +1103,7 @@ async def acheter(
 
 {citation}
 """
-        )
+)
 
         return
 
@@ -1168,10 +1168,10 @@ async def acheter(
         user_id
     ))
 
-    conn.commit()
+   conn.commit()
 
-    await interaction.response.send_message(
-        f"""
+await interaction.response.send_message(
+    f"""
 ✅ Achat effectué !
 
 Objet obtenu :
@@ -1180,7 +1180,8 @@ Objet obtenu :
 
 💰 Coins restants : {coins}
 """
-    )
+)
+
 @bot.tree.command(
     name="inventaire",
     description="Voir ton inventaire"
@@ -1209,9 +1210,11 @@ async def inventaire(interaction: discord.Interaction):
     for objet in objets:
         message += f"• {objet[0]}\n"
 
-    await interaction.response.send_message(message)
-
-@bot.tree.command(
+    await interaction.response.send_message(
+        message,
+        ephemeral=True
+    )
+    @bot.tree.command(
     name="equiper",
     description="Équiper un titre"
 )
@@ -1248,10 +1251,4 @@ async def equiper(
         titre
     ))
 
-    conn.commit()
-
-    await interaction.response.send_message(
-        f"👑 Titre équipé : {titre}"
-    )
-    
 bot.run(TOKEN)
