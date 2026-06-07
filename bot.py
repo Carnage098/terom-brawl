@@ -970,7 +970,7 @@ if mise > coins:
         )
         return
 
-    roll = random.randint(1, 100)
+roll = random.randint(1, 100)
 
     if roll <= 50:
         gain = -mise
