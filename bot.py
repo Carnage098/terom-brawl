@@ -961,7 +961,7 @@ if mise <= 0:
         )
         return
 
-    coins = joueur[8]
+coins = joueur[8]
 
     if mise > coins:
         await interaction.response.send_message(
