@@ -134,17 +134,18 @@ async def inscription(interaction: discord.Interaction):
 
     user_id = str(interaction.user.id)
     pseudo = interaction.user.name
-cursor.execute(
-    "SELECT * FROM joueurs WHERE user_id=?",
-    (user_id,)
-)
+
+    cursor.execute(
+        "SELECT * FROM joueurs WHERE user_id=?",
+        (user_id,)
+    )
 
     joueur = cursor.fetchone()
 
     if joueur:
-       await interaction.followup.send(
-    "❌ Tu es déjà inscrit à TeRom-Brawl.",
-    ephemeral=True
+        await interaction.followup.send(
+            "❌ Tu es déjà inscrit à TeRom-Brawl.",
+            ephemeral=True
         )
         return
 
