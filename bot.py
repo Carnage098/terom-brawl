@@ -304,6 +304,22 @@ async def resultat(
 
     gain = random.randint(10, 100)
     perte = random.randint(1, 50)
+    roll = random.randint(1, 100)
+
+if roll <= 50:
+    coins_gagnes = random.randint(50, 150)
+
+elif roll <= 80:
+    coins_gagnes = random.randint(151, 300)
+
+elif roll <= 95:
+    coins_gagnes = random.randint(301, 600)
+
+elif roll <= 99:
+    coins_gagnes = random.randint(601, 900)
+
+else:
+    coins_gagnes = 1000
 
     points_joueur = joueur[2]
     victoires_joueur = joueur[3]
@@ -356,6 +372,7 @@ async def resultat(
 
     grade_joueur = get_grade(points_joueur)
     grade_adv = get_grade(points_adv)
+    coins_joueur += coins_gagnes
 
     cursor.execute("""
     UPDATE joueurs
@@ -409,25 +426,6 @@ async def resultat(
         resultat.value,
         gain if resultat.value == "victoire" else -perte
     ))
-
-gain = random.randint(10, 100)
-perte = random.randint(1, 50)
-roll = random.randint(1, 100)
-
-if roll <= 50:
-    coins_gagnes = random.randint(50, 150)
-
-elif roll <= 80:
-    coins_gagnes = random.randint(151, 300)
-
-elif roll <= 95:
-    coins_gagnes = random.randint(301, 600)
-
-elif roll <= 99:
-    coins_gagnes = random.randint(601, 900)
-
-else:
-    coins_gagnes = 1000
     
     conn.commit()
 
