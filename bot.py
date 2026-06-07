@@ -928,9 +928,8 @@ async def roulette(
         user_id
     ))
 
-   conn.commit()
-
-   await interaction.response.send_message(
+conn.commit()
+await interaction.response.send_message(
     f"""
 🎲 Roulette TeRom-Brawl
 
