@@ -16,6 +16,7 @@ bot = commands.Bot(
     intents=intents
 )
 pending_matches = {}
+guerres_actives = {}
 conn = sqlite3.connect("database.db")
 cursor = conn.cursor()
 cursor.execute("""
@@ -2579,6 +2580,145 @@ async def marche(interaction: discord.Interaction):
 ⚠️ Risque de crise :
 {risque}
 """
+    )
+@bot.tree.command(
+    name="declencher_guerre",
+    description="Déclencher une guerre économique"
+)
+async def declencher_guerre(
+    interaction: discord.Interaction,
+    joueur: discord.Member,
+    montant: int
+):
+
+    user_id = str(interaction.user.id)
+
+    if montant <= 0:
+        await interaction.response.send_message(
+            "❌ Montant invalide."
+        )
+        return
+
+    cursor.execute(
+        "SELECT * FROM joueurs WHERE user_id=?",
+        (user_id,)
+    )
+
+    data = cursor.fetchone()
+
+    if not data:
+        await interaction.response.send_message(
+            "❌ Tu n'es pas inscrit."
+        )
+        return
+
+    if data[8] < montant:
+        await interaction.response.send_message(
+            "❌ Tu n'as pas assez de Coins."
+        )
+        return
+
+    guerres_actives[str(joueur.id)] = {
+        "initiateur": user_id,
+        "montant": montant
+    }
+
+    await interaction.response.send_message(
+        f"""
+⚔️ Guerre Économique
+
+{interaction.user.mention} défie {joueur.mention}
+
+💰 Mise : {montant} Coins
+
+Utilise /accepter_guerre ou /refuser_guerre
+"""
+    )
+@bot.tree.command(
+    name="accepter_guerre",
+    description="Accepter une guerre économique"
+)
+async def accepter_guerre(
+    interaction: discord.Interaction
+):
+
+    user_id = str(interaction.user.id)
+
+    if user_id not in guerres_actives:
+        await interaction.response.send_message(
+            "❌ Aucune guerre en attente."
+        )
+        return
+
+    guerre = guerres_actives[user_id]
+
+    initiateur = guerre["initiateur"]
+    montant = guerre["montant"]
+
+    cursor.execute(
+        "SELECT * FROM joueurs WHERE user_id=?",
+        (user_id,)
+    )
+    joueur = cursor.fetchone()
+
+    if joueur[8] < montant:
+        await interaction.response.send_message(
+            "❌ Tu n'as pas assez de Coins."
+        )
+        return
+
+    cursor.execute(
+        "SELECT * FROM joueurs WHERE user_id=?",
+        (initiateur,)
+    )
+    initiateur_data = cursor.fetchone()
+
+    cursor.execute("""
+    UPDATE joueurs
+    SET teromik_coins=?
+    WHERE user_id=?
+    """, (
+        initiateur_data[8] - montant,
+        initiateur
+    ))
+
+    cursor.execute("""
+    UPDATE joueurs
+    SET teromik_coins=?
+    WHERE user_id=?
+    """, (
+        joueur[8] - montant,
+        user_id
+    ))
+
+    guerre["acceptee"] = True
+
+    conn.commit()
+
+    await interaction.response.send_message(
+        f"""
+⚔️ Guerre Économique acceptée
+
+💰 Pot total : {montant * 2} Coins
+
+Le vainqueur du prochain duel remportera tout.
+"""
+    )
+@bot.tree.command(
+    name="refuser_guerre",
+    description="Refuser une guerre économique"
+)
+async def refuser_guerre(
+    interaction: discord.Interaction
+):
+
+    user_id = str(interaction.user.id)
+
+    if user_id in guerres_actives:
+        del guerres_actives[user_id]
+
+    await interaction.response.send_message(
+        "❌ Guerre économique refusée."
     )
 
 bot.run(TOKEN)
