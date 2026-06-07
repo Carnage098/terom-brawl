@@ -15,6 +15,7 @@ bot = commands.Bot(
     command_prefix="!",
     intents=intents
 )
+pending_matches[str(joueur.id)] = str(interaction.user.id)
 pending_matches = {}
 conn = sqlite3.connect("database.db")
 cursor = conn.cursor()
