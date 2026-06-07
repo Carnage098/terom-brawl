@@ -1133,7 +1133,7 @@ jackpot_message += """
 "Les probabilités se sont inclinées devant toi."
 """
 
-cursor.execute("""
+    cursor.execute("""
     UPDATE joueurs
     SET teromik_coins=?
     WHERE user_id=?
@@ -1142,9 +1142,9 @@ cursor.execute("""
         user_id
     ))
 
-conn.commit()
+    conn.commit()
 
-await interaction.response.send_message(
+    await interaction.response.send_message(
         f"""
 🎲 Roulette TeRom-Brawl
 
