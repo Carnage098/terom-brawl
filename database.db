@@ -1,1 +1,7 @@
-
+CREATE TABLE IF NOT EXISTS saisons (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    nom TEXT,
+    date_debut TEXT,
+    date_fin TEXT,
+    active INTEGER DEFAULT 1
+)
