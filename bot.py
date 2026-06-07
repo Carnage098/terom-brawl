@@ -1049,7 +1049,6 @@ async def acheter(
         "terrorageux_all_time": 100000
     }
 
-    objet = objet.lower()
 
     if objet not in prix:
         await interaction.response.send_message(
