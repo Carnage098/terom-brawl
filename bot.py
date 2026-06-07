@@ -287,6 +287,7 @@ async def resultat(
     victoires_adv = adversaire_db[3]
     defaites_adv = adversaire_db[4]
     serie_adv = adversaire_db[5]
+    streak_max_joueur = joueur[6]
 
 if resultat.value == "victoire":
 
@@ -357,7 +358,7 @@ if resultat.value == "victoire":
     streak_max_joueur,
     grade_joueur,
     user_id
-)
+))
                    
 
     cursor.execute("""
