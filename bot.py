@@ -1217,7 +1217,7 @@ async def inventaire(interaction: discord.Interaction):
     name="equiper",
     description="Équiper un titre"
 )
-async def equiper(
+    async def equiper(
     interaction: discord.Interaction,
     titre: str
 ):
