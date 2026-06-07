@@ -1142,7 +1142,8 @@ if objet == "booster_teromik":
     ))
 
     conn.commit()
-await interaction.response.send_message(
+
+    await interaction.response.send_message(
         f"""
 ✍️ Booster Signé par TeRomik utilisé !
 
@@ -1157,19 +1158,21 @@ await interaction.response.send_message(
 💰 Coins restants : {coins}
 """
     )
-return
-conn.commit()
-await interaction.response.send_message(
-            f"""
+
+    return
+        conn.commit()
+
+    await interaction.response.send_message(
+        f"""
 ⚔️ Booster utilisé !
 
 🏆 +50 victoires
 
 💰 Coins restants : {coins}
 """
-        )
-return
+    )
 
+    return
     # TITRES ET TROPHÉE
 
 noms = {
