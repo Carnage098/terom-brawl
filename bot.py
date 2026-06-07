@@ -2053,4 +2053,201 @@ async def records(interaction: discord.Interaction):
 {roi_coins[0]} — {roi_coins[1]} Coins
 """
     )
+@bot.tree.command(
+    name="banque",
+    description="Voir ton compte bancaire"
+)
+async def banque(interaction: discord.Interaction):
+
+    user_id = str(interaction.user.id)
+
+    cursor.execute("""
+    SELECT solde
+    FROM banque
+    WHERE user_id=?
+    """, (user_id,))
+
+    data = cursor.fetchone()
+
+    if not data:
+        cursor.execute("""
+        INSERT INTO banque (
+            user_id,
+            solde
+        )
+        VALUES (?, 0)
+        """, (user_id,))
+        conn.commit()
+        solde = 0
+    else:
+        solde = data[0]
+
+    await interaction.response.send_message(
+        f"""
+🏦 Banque TeRomik
+
+💰 Solde bancaire : {solde} Coins
+"""
+    )
+@bot.tree.command(
+    name="depot",
+    description="Déposer des Coins à la banque"
+)
+async def depot(
+    interaction: discord.Interaction,
+    montant: int
+):
+
+    user_id = str(interaction.user.id)
+
+    if montant <= 0:
+        await interaction.response.send_message(
+            "❌ Montant invalide."
+        )
+        return
+
+    cursor.execute(
+        "SELECT * FROM joueurs WHERE user_id=?",
+        (user_id,)
+    )
+
+    joueur = cursor.fetchone()
+
+    if not joueur:
+        await interaction.response.send_message(
+            "❌ Tu n'es pas inscrit."
+        )
+        return
+
+    coins = joueur[8]
+
+    if montant > coins:
+        await interaction.response.send_message(
+            f"❌ Tu ne possèdes que {coins} Coins."
+        )
+        return
+
+    cursor.execute("""
+    INSERT OR IGNORE INTO banque (
+        user_id,
+        solde
+    )
+    VALUES (?, 0)
+    """, (user_id,))
+
+    cursor.execute("""
+    SELECT solde
+    FROM banque
+    WHERE user_id=?
+    """, (user_id,))
+
+    solde = cursor.fetchone()[0]
+
+    cursor.execute("""
+    UPDATE joueurs
+    SET teromik_coins=?
+    WHERE user_id=?
+    """, (
+        coins - montant,
+        user_id
+    ))
+
+    cursor.execute("""
+    UPDATE banque
+    SET solde=?
+    WHERE user_id=?
+    """, (
+        solde + montant,
+        user_id
+    ))
+
+    conn.commit()
+
+    await interaction.response.send_message(
+        f"""
+🏦 Dépôt effectué
+
+➖ {montant} Coins
+
+💰 Solde bancaire : {solde + montant}
+"""
+    )
+@bot.tree.command(
+    name="retrait",
+    description="Retirer des Coins de la banque"
+)
+async def retrait(
+    interaction: discord.Interaction,
+    montant: int
+):
+
+    user_id = str(interaction.user.id)
+
+    if montant <= 0:
+        await interaction.response.send_message(
+            "❌ Montant invalide."
+        )
+        return
+
+    cursor.execute("""
+    SELECT solde
+    FROM banque
+    WHERE user_id=?
+    """, (user_id,))
+
+    data = cursor.fetchone()
+
+    if not data:
+        await interaction.response.send_message(
+            "❌ Aucun compte bancaire."
+        )
+        return
+
+    solde = data[0]
+
+    if montant > solde:
+        await interaction.response.send_message(
+            f"❌ Tu ne possèdes que {solde} Coins en banque."
+        )
+        return
+
+    cursor.execute(
+        "SELECT * FROM joueurs WHERE user_id=?",
+        (user_id,)
+    )
+
+    joueur = cursor.fetchone()
+
+    nouveaux_coins = joueur[8] + montant
+
+    cursor.execute("""
+    UPDATE joueurs
+    SET teromik_coins=?
+    WHERE user_id=?
+    """, (
+        nouveaux_coins,
+        user_id
+    ))
+
+    cursor.execute("""
+    UPDATE banque
+    SET solde=?
+    WHERE user_id=?
+    """, (
+        solde - montant,
+        user_id
+    ))
+
+    conn.commit()
+
+    await interaction.response.send_message(
+        f"""
+🏦 Retrait effectué
+
+➕ {montant} Coins
+
+💰 Solde bancaire restant : {solde - montant}
+"""
+    )
+
 bot.run(TOKEN)
