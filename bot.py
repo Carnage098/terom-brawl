@@ -486,43 +486,44 @@ async def resultat(
         resultat.value,
         gain if resultat.value == "victoire" else -perte
     ))
-cursor.execute("""
-INSERT INTO historique_duels (
-    joueur1,
-    joueur2,
-    resultat,
-    plateforme,
-    date
-)
-VALUES (?, ?, ?, ?, ?)
-""", (
-    interaction.user.display_name,
-    adversaire.display_name,
-    resultat,
-    plateforme,
-    datetime.now().strftime("%d/%m/%Y %H:%M")
-))
-conn.commit()
+    cursor.execute("""
+    INSERT INTO historique_duels (
+        joueur1,
+        joueur2,
+        resultat,
+        plateforme,
+        date
+    )
+    VALUES (?, ?, ?, ?, ?)
+    """, (
+        interaction.user.display_name,
+        adversaire.display_name,
+        resultat.value,
+        plateforme.value,
+        datetime.now().strftime("%d/%m/%Y %H:%M")
+    ))
 
-jackpot_message = ""
+    conn.commit()
 
-if coins_gagnes_joueur == 1000:
-    jackpot_message += "\n🎰 JACKPOT DU JOUEUR ! +1000 Coins"
+    jackpot_message = ""
 
-if coins_gagnes_adv == 1000:
-    jackpot_message += "\n🎰 JACKPOT DE L'ADVERSAIRE ! +1000 Coins"
+    if coins_gagnes_joueur == 1000:
+        jackpot_message += "\n🎰 JACKPOT DU JOUEUR ! +1000 Coins"
 
-await interaction.response.send_message(
-    f"⚔️ Duel enregistré\n\n"
-    f"🏆 Gagnant : {gagnant}\n"
-    f"📈 Gain : +{gain} points\n\n"
-    f"💀 Perdant : {perdant}\n"
-    f"📉 Perte : -{perte} points\n\n"
-    f"👤 {interaction.user.display_name} : +{coins_gagnes_joueur} Coins\n"
-    f"👤 {adversaire.display_name} : +{coins_gagnes_adv} Coins\n"
-    f"{jackpot_message}\n\n"
-    f"🎮 Plateforme : {plateforme.name}"
-)
+    if coins_gagnes_adv == 1000:
+        jackpot_message += "\n🎰 JACKPOT DE L'ADVERSAIRE ! +1000 Coins"
+
+    await interaction.response.send_message(
+        f"⚔️ Duel enregistré\n\n"
+        f"🏆 Gagnant : {gagnant}\n"
+        f"📈 Gain : +{gain} points\n\n"
+        f"💀 Perdant : {perdant}\n"
+        f"📉 Perte : -{perte} points\n\n"
+        f"👤 {interaction.user.display_name} : +{coins_gagnes_joueur} Coins\n"
+        f"👤 {adversaire.display_name} : +{coins_gagnes_adv} Coins\n"
+        f"{jackpot_message}\n\n"
+        f"🎮 Plateforme : {plateforme.name}"
+    )
 @bot.tree.command(
     name="classement",
     description="Voir le classement TeRom-Brawl"
