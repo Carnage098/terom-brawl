@@ -126,6 +126,13 @@ CREATE TABLE IF NOT EXISTS banque (
     solde INTEGER DEFAULT 0
 )
 """)
+try:
+    cursor.execute("""
+    ALTER TABLE banque
+    ADD COLUMN dernier_interet TEXT
+    """)
+except:
+    pass
 conn.commit()
 def get_grade(points):
 
@@ -2247,6 +2254,85 @@ async def retrait(
 ➕ {montant} Coins
 
 💰 Solde bancaire restant : {solde - montant}
+"""
+    )
+@bot.tree.command(
+    name="collecter_interets",
+    description="Collecter les intérêts de ta banque"
+)
+async def collecter_interets(
+    interaction: discord.Interaction
+):
+
+    user_id = str(interaction.user.id)
+
+    cursor.execute("""
+    SELECT solde, dernier_interet
+    FROM banque
+    WHERE user_id=?
+    """, (user_id,))
+
+    data = cursor.fetchone()
+
+    if not data:
+        await interaction.response.send_message(
+            "❌ Tu ne possèdes pas de compte bancaire."
+        )
+        return
+
+    solde = data[0]
+    dernier_interet = data[1]
+
+    maintenant = datetime.utcnow()
+
+    if dernier_interet:
+
+        dernier_interet = datetime.fromisoformat(
+            dernier_interet
+        )
+
+        if maintenant - dernier_interet < timedelta(hours=24):
+
+            restant = timedelta(hours=24) - (
+                maintenant - dernier_interet
+            )
+
+            heures = restant.seconds // 3600
+            minutes = (restant.seconds % 3600) // 60
+
+            await interaction.response.send_message(
+                f"⏳ Prochains intérêts dans {heures}h {minutes}min."
+            )
+            return
+
+    gain = int(solde * 0.05)
+
+    if gain <= 0:
+        gain = 1
+
+    nouveau_solde = solde + gain
+
+    cursor.execute("""
+    UPDATE banque
+    SET solde=?,
+        dernier_interet=?
+    WHERE user_id=?
+    """, (
+        nouveau_solde,
+        maintenant.isoformat(),
+        user_id
+    ))
+
+    conn.commit()
+
+    await interaction.response.send_message(
+        f"""
+🏦 Intérêts collectés
+
+📈 Gain : +{gain} Coins
+
+💰 Nouveau solde :
+{nouveau_solde} Coins
 """
     )
 
