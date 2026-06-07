@@ -954,7 +954,7 @@ if not joueur:
         )
         return
 
-    if mise <= 0:
+if mise <= 0:
         await interaction.response.send_message(
             "❌ Mise invalide.",
             ephemeral=True
