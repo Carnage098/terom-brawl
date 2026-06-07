@@ -1542,66 +1542,6 @@ async def face_a_face(
 
     for duel in duels:
 
-        gagnant = duel[2]
-
-        if gagnant == moi:
-            mes_victoires += 1
-        elif gagnant == lui:
-            ses_victoires += 1
-
-    await interaction.response.send_message(
-        f"""
-🔥 Rivalité détectée !
-
-⚔️ {moi} vs {lui}
-
-🏆 {moi} : {mes_victoires} victoires
-
-🏆 {lui} : {ses_victoires} victoires
-
-📜 Total des affrontements : {len(duels)}
-"""
-    )
-
-@bot.tree.command(
-    name="face_a_face",
-    description="Voir ton historique contre un joueur"
-)
-async def face_a_face(
-    interaction: discord.Interaction,
-    joueur: discord.Member
-):
-
-    moi = interaction.user.display_name
-    lui = joueur.display_name
-
-    cursor.execute("""
-    SELECT joueur1, joueur2, resultat
-    FROM historique_duels
-    WHERE
-    (joueur1=? AND joueur2=?)
-    OR
-    (joueur1=? AND joueur2=?)
-    """, (
-        moi,
-        lui,
-        lui,
-        moi
-    ))
-
-    duels = cursor.fetchall()
-
-    if not duels:
-        await interaction.response.send_message(
-            "❌ Aucun affrontement trouvé."
-        )
-        return
-
-    mes_victoires = 0
-    ses_victoires = 0
-
-    for duel in duels:
-
         joueur1 = duel[0]
         joueur2 = duel[1]
         resultat = duel[2]
