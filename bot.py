@@ -1153,8 +1153,7 @@ cursor.execute("""
         coins,
         user_id
     ))
-
-    conn.commit()
+conn.commit()
 
     await interaction.response.send_message(
     f"""
