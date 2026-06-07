@@ -1078,22 +1078,10 @@ async def acheter(
 
         elif gain >= 5000:
 
-            citation = (
-                '📜 "Même les dimensions tremblent devant une telle récompense."\n'
-                '— Tero-Seigneur des Dimensions'
-            )
+                 conn.commit()
 
-        elif gain >= 2000:
-
-            citation = (
-                '📜 "Voilà un exploit qui mérite le respect."\n'
-                '— Jack Atlas'
-            )
-
-        conn.commit()
-
-    await interaction.response.send_message(
-    f"""
+        await interaction.response.send_message(
+            f"""
 📈 Booster ouvert !
 
 🎲 Gain obtenu : +{gain} points
@@ -1102,12 +1090,12 @@ async def acheter(
 
 {citation}
 """
-)
+        )
 
-    return
+        return
 
     # BOOSTER VICTOIRES
-if objet == "booster_victoires":
+    if objet == "booster_victoires":
 
         nouvelles_victoires = joueur[3] + 50
 
@@ -1137,7 +1125,6 @@ if objet == "booster_victoires":
         return
 
     # TITRES ET TROPHÉE
-
 noms = {
         "teromik_fan": "❤️ TeRomik Fan",
         "terochasseur": "⚔️ Terochasseur de Duels",
