@@ -2537,5 +2537,52 @@ else:
 🪙 Nouveau solde : {nouveaux_coins}
 """
     )
+@bot.tree.command(
+    name="marche",
+    description="Voir l'état du marché financier"
+)
+async def marche(interaction: discord.Interaction):
+
+    cursor.execute("""
+    SELECT SUM(montant)
+    FROM investissements
+    """)
+
+    total = cursor.fetchone()[0]
+
+    if total is None:
+        total = 0
+
+    cursor.execute("""
+    SELECT COUNT(*)
+    FROM investissements
+    WHERE montant > 0
+    """)
+
+    investisseurs = cursor.fetchone()[0]
+
+    if total < 100000:
+        risque = "🟢 Faible"
+    elif total < 500000:
+        risque = "🟡 Modéré"
+    elif total < 1000000:
+        risque = "🟠 Élevé"
+    else:
+        risque = "🔴 Critique"
+
+    await interaction.response.send_message(
+        f"""
+📈 Marché TeRom-Brawl
+
+💰 Investissements totaux :
+{total:,} Coins
+
+👥 Investisseurs actifs :
+{investisseurs}
+
+⚠️ Risque de crise :
+{risque}
+"""
+    )
 
 bot.run(TOKEN)
