@@ -29,6 +29,8 @@ CREATE TABLE IF NOT EXISTS joueurs (
     grade TEXT DEFAULT 'Recrue',
     teromik_coins INTEGER DEFAULT 0
 )
+""")
+
 try:
     cursor.execute("""
     ALTER TABLE joueurs
