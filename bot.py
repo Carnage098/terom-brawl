@@ -1122,8 +1122,9 @@ if objet == "booster_victoires":
             user_id
         ))
 
-conn.commit()
-await interaction.response.send_message(
+        conn.commit()
+
+        await interaction.response.send_message(
             f"""
 ⚔️ Booster utilisé !
 
@@ -1132,7 +1133,8 @@ await interaction.response.send_message(
 💰 Coins restants : {coins}
 """
         )
-return
+
+        return
 
     # TITRES ET TROPHÉE
 
