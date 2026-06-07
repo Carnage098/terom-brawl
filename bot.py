@@ -1145,7 +1145,7 @@ cursor.execute("""
         noms[objet]
     ))
 
-cursor.execute("""
+    cursor.execute("""
     UPDATE joueurs
     SET teromik_coins=?
     WHERE user_id=?
@@ -1153,10 +1153,11 @@ cursor.execute("""
         coins,
         user_id
     ))
-conn.commit()
 
-await interaction.response.send_message(
-    f"""
+    conn.commit()
+
+    await interaction.response.send_message(
+        f"""
 ✅ Achat effectué !
 
 Objet obtenu :
@@ -1165,7 +1166,7 @@ Objet obtenu :
 
 💰 Coins restants : {coins}
 """
-)
+    )
 
 @bot.tree.command(
     name="inventaire",
