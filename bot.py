@@ -1401,6 +1401,112 @@ async def debug_joueurs(interaction: discord.Interaction):
         f"Nombre de joueurs : {len(joueurs)}"
     )
 
+@bot.tree.command(
+    name="mes_duels",
+    description="Voir tes 20 derniers duels"
+)
+async def mes_duels(interaction: discord.Interaction):
+
+    pseudo = interaction.user.display_name
+
+    cursor.execute("""
+    SELECT joueur1, joueur2, resultat, plateforme, date
+    FROM historique_duels
+    WHERE joueur1=? OR joueur2=?
+    ORDER BY id DESC
+    LIMIT 20
+    """, (
+        pseudo,
+        pseudo
+    ))
+
+    duels = cursor.fetchall()
+
+    if not duels:
+        await interaction.response.send_message(
+            "❌ Aucun duel enregistré."
+        )
+        return
+
+    message = f"📜 Historique de {pseudo}\n\n"
+
+    for duel in duels:
+
+        joueur1 = duel[0]
+        joueur2 = duel[1]
+        resultat = duel[2]
+        plateforme = duel[3]
+        date = duel[4]
+
+        message += (
+            f"⚔️ {joueur1} vs {joueur2}\n"
+            f"🏆 {resultat}\n"
+            f"💻 {plateforme}\n"
+            f"📅 {date}\n\n"
+        )
+
+    await interaction.response.send_message(message)
+
+@bot.tree.command(
+    name="face_a_face",
+    description="Voir ton historique contre un joueur"
+)
+async def face_a_face(
+    interaction: discord.Interaction,
+    joueur: discord.Member
+):
+
+    moi = interaction.user.display_name
+    lui = joueur.display_name
+
+    cursor.execute("""
+    SELECT joueur1, joueur2, resultat
+    FROM historique_duels
+    WHERE
+    (joueur1=? AND joueur2=?)
+    OR
+    (joueur1=? AND joueur2=?)
+    """, (
+        moi,
+        lui,
+        lui,
+        moi
+    ))
+
+    duels = cursor.fetchall()
+
+    if not duels:
+        await interaction.response.send_message(
+            "❌ Aucun affrontement trouvé."
+        )
+        return
+
+    mes_victoires = 0
+    ses_victoires = 0
+
+    for duel in duels:
+
+        gagnant = duel[2]
+
+        if gagnant == moi:
+            mes_victoires += 1
+        elif gagnant == lui:
+            ses_victoires += 1
+
+    await interaction.response.send_message(
+        f"""
+🔥 Rivalité détectée !
+
+⚔️ {moi} vs {lui}
+
+🏆 {moi} : {mes_victoires} victoires
+
+🏆 {lui} : {ses_victoires} victoires
+
+📜 Total des affrontements : {len(duels)}
+"""
+    )
+
 
     
 bot.run(TOKEN)
