@@ -1504,10 +1504,10 @@ async def mes_duels(interaction: discord.Interaction):
     await interaction.response.send_message(message)
 
 @bot.tree.command(
-    name="face_a_face",
+    name="rivalite",
     description="Voir ton historique contre un joueur"
 )
-async def face_a_face(
+async def rivalite(
     interaction: discord.Interaction,
     joueur: discord.Member
 ):
