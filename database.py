@@ -20,3 +20,12 @@ def init_db():
     conn.commit()
     conn.close()
 
+
+CREATE TABLE IF NOT EXISTS matchs (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    gagnant_id TEXT,
+    perdant_id TEXT,
+    date_match TEXT,
+    points_gagnes INTEGER
+)
+
