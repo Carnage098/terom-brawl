@@ -976,7 +976,7 @@ async def roulette(
 
     if random.randint(1, 5000) == 1:
 
-        cursor.execute("""
+cursor.execute("""
         SELECT montant
         FROM jackpot_global
         WHERE id=1
