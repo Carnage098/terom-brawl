@@ -1669,19 +1669,6 @@ async def inscrire_joueur(
 """
     )
 
-@bot.tree.command(
-    name="debug_joueurs",
-    description="Debug"
-)
-async def debug_joueurs(interaction: discord.Interaction):
-
-    cursor.execute("SELECT * FROM joueurs")
-
-    joueurs = cursor.fetchall()
-
-    await interaction.response.send_message(
-        f"Nombre de joueurs : {len(joueurs)}"
-    )
 
 @bot.tree.command(
     name="mes_duels",
