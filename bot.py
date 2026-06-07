@@ -282,74 +282,73 @@ async def resultat(
     victoires_joueur = joueur[3]
     defaites_joueur = joueur[4]
     serie_joueur = joueur[5]
+    streak_max_joueur = joueur[6]
 
     points_adv = adversaire_db[2]
     victoires_adv = adversaire_db[3]
     defaites_adv = adversaire_db[4]
     serie_adv = adversaire_db[5]
-    streak_max_joueur = joueur[6]
 
     if resultat.value == "victoire":
 
-    points_joueur += gain
-    victoires_joueur += 1
-    serie_joueur += 1
+        points_joueur += gain
+        victoires_joueur += 1
+        serie_joueur += 1
 
-    if serie_joueur > streak_max_joueur:
-        streak_max_joueur = serie_joueur
+        if serie_joueur > streak_max_joueur:
+            streak_max_joueur = serie_joueur
 
-    points_adv -= perte
+        points_adv -= perte
 
-    if points_adv < 0:
-        points_adv = 0
+        if points_adv < 0:
+            points_adv = 0
 
-    defaites_adv += 1
-    serie_adv = 0
+        defaites_adv += 1
+        serie_adv = 0
 
-    gagnant = interaction.user.mention
-    perdant = adversaire.mention
+        gagnant = interaction.user.mention
+        perdant = adversaire.mention
 
     else:
 
-    points_joueur -= perte
+        points_joueur -= perte
 
-    if points_joueur < 0:
-        points_joueur = 0
+        if points_joueur < 0:
+            points_joueur = 0
 
-    defaites_joueur += 1
-    serie_joueur = 0
+        defaites_joueur += 1
+        serie_joueur = 0
 
-    points_adv += gain
-    victoires_adv += 1
-    serie_adv += 1
+        points_adv += gain
+        victoires_adv += 1
+        serie_adv += 1
 
-    gagnant = adversaire.mention
-    perdant = interaction.user.mention
+        gagnant = adversaire.mention
+        perdant = interaction.user.mention
 
-grade_joueur = get_grade(points_joueur)
-grade_adv = get_grade(points_adv)
+    grade_joueur = get_grade(points_joueur)
+    grade_adv = get_grade(points_adv)
 
-
-cursor.execute("""
+    cursor.execute("""
     UPDATE joueurs
     SET points=?,
-    victoires=?,
-    defaites=?,
-    serie=?,
-    streak_max=?,
-    grade=?
+        victoires=?,
+        defaites=?,
+        serie=?,
+        streak_max=?,
+        grade=?
     WHERE user_id=?
     """, (
-    points_joueur,
-    victoires_joueur,
-    defaites_joueur,
-    serie_joueur,
-    streak_max_joueur,
-    grade_joueur,
-    user_id
-))
-                   
-cursor.execute("""
+        points_joueur,
+        victoires_joueur,
+        defaites_joueur,
+        serie_joueur,
+        streak_max_joueur,
+        grade_joueur,
+        user_id
+    ))
+
+    cursor.execute("""
     UPDATE joueurs
     SET points=?,
         victoires=?,
@@ -366,7 +365,7 @@ cursor.execute("""
         str(adversaire.id)
     ))
 
-cursor.execute("""
+    cursor.execute("""
     INSERT INTO matchs (
         joueur_id,
         adversaire_id,
@@ -383,9 +382,9 @@ cursor.execute("""
         gain if resultat.value == "victoire" else -perte
     ))
 
-conn.commit()
+    conn.commit()
 
-await interaction.response.send_message(
+    await interaction.response.send_message(
         f"""
 ⚔️ Duel enregistré
 
