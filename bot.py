@@ -2494,7 +2494,7 @@ async def recuperer_investissement(
 
     else:
 
-    cursor.execute("""
+cursor.execute("""
     UPDATE investissements
     SET montant = CAST(montant * 0.80 AS INTEGER)
     """)
