@@ -1161,8 +1161,7 @@ if objet == "booster_teromik":
 
     return
     conn.commit()
-
-        await interaction.response.send_message(
+    await interaction.response.send_message(
             f"""
 ⚔️ Booster utilisé !
 
