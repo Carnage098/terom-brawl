@@ -75,7 +75,19 @@ CREATE TABLE IF NOT EXISTS equipes (
     points INTEGER DEFAULT 0
 )
 """)
+cursor.execute("""
+CREATE TABLE IF NOT EXISTS inventaire (
+    user_id TEXT,
+    objet TEXT
+)
+""")
 
+cursor.execute("""
+CREATE TABLE IF NOT EXISTS titres (
+    user_id TEXT PRIMARY KEY,
+    titre TEXT
+)
+""") 
 conn.commit()
 def get_grade(points):
 
@@ -898,5 +910,40 @@ async def roulette(
 💼 Nouveau solde : {nouveaux_coins}
 """
     )
+@bot.tree.command(
+    name="shop",
+    description="Voir la boutique TeRom-Brawl"
+)
+async def shop(interaction: discord.Interaction):
+
+    await interaction.response.send_message(
+        """
+🛒 **Boutique TeRom-Brawl**
+
+📈 Booster Points — 2000 Coins
+
+⚔️ Booster +50 Victoires — 10000 Coins
+
+❤️ TeRomik Fan — 5000 Coins
+
+⚔️ Terochasseur de Duels — 10000 Coins
+
+🔥 Maître Tero — 25000 Coins
+
+👑 TeroRoi de l'Arène — 50000 Coins
+
+🌌 Tero-Seigneur des Dimensions — 100000 Coins
+
+🏆 Terrorageux All Time — 100000 Coins
+"""
+    )
+@bot.tree.command(
+    name="acheter",
+    description="Acheter un objet du shop"
+)
+async def acheter(
+    interaction: discord.Interaction,
+    objet: str
+):
 
 bot.run(TOKEN)
