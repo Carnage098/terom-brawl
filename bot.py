@@ -1018,17 +1018,20 @@ async def shop(interaction: discord.Interaction):
 async def acheter(
     interaction: discord.Interaction,
     objet: app_commands.Choice[str]
-):objet = objet.value
-user_id = str(interaction.user.id)
+):
 
-cursor.execute(
+    objet = objet.value
+
+    user_id = str(interaction.user.id)
+
+    cursor.execute(
         "SELECT * FROM joueurs WHERE user_id=?",
         (user_id,)
     )
 
-joueur = cursor.fetchone()
+    joueur = cursor.fetchone()
 
-if not joueur:
+    if not joueur:
         await interaction.response.send_message(
             "❌ Tu n'es pas inscrit.",
             ephemeral=True
@@ -1049,17 +1052,9 @@ if not joueur:
         "terrorageux_all_time": 100000
     }
 
-
-    if objet not in prix:
-        await interaction.response.send_message(
-            "❌ Objet introuvable.",
-            ephemeral=True
-        )
-        return
-
     if coins < prix[objet]:
         await interaction.response.send_message(
-            f"❌ Il te faut {prix[objet]} coins.",
+            f"❌ Il te faut {prix[objet]} Coins.",
             ephemeral=True
         )
         return
