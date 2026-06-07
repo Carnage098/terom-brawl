@@ -1664,4 +1664,135 @@ async def jackpot(interaction: discord.Interaction):
 """
     )
 
+@bot.tree.command(
+    name="topcoins",
+    description="Voir les joueurs les plus riches"
+)
+async def topcoins(interaction: discord.Interaction):
+
+    cursor.execute("""
+    SELECT pseudo, teromik_coins
+    FROM joueurs
+    ORDER BY teromik_coins DESC
+    LIMIT 10
+    """)
+
+    joueurs = cursor.fetchall()
+
+    if not joueurs:
+        await interaction.response.send_message(
+            "❌ Aucun joueur inscrit."
+        )
+        return
+
+    message = "💰 **Fortune TeRom-Brawl**\n\n"
+
+    medailles = ["🥇", "🥈", "🥉"]
+
+    for index, joueur in enumerate(joueurs, start=1):
+
+        pseudo = joueur[0]
+        coins = joueur[1]
+
+        if index <= 3:
+            rang = medailles[index - 1]
+        else:
+            rang = f"#{index}"
+
+        message += (
+            f"{rang} **{pseudo}**\n"
+            f"🪙 {coins} Coins\n\n"
+        )
+
+    await interaction.response.send_message(message)
+
+@bot.tree.command(
+    name="fortune",
+    description="Voir la richesse globale de TeRom-Brawl"
+)
+async def fortune(interaction: discord.Interaction):
+
+    cursor.execute("""
+    SELECT SUM(teromik_coins)
+    FROM joueurs
+    """)
+
+    total = cursor.fetchone()[0]
+
+    if total is None:
+        total = 0
+
+    cursor.execute("""
+    SELECT COUNT(*)
+    FROM joueurs
+    """)
+
+    nb_joueurs = cursor.fetchone()[0]
+
+    moyenne = 0
+
+    if nb_joueurs > 0:
+        moyenne = round(total / nb_joueurs)
+
+    await interaction.response.send_message(
+        f"""
+💰 **Fortune de TeRom-Brawl**
+
+🪙 Coins en circulation :
+{total}
+
+👥 Joueurs inscrits :
+{nb_joueurs}
+
+📈 Fortune moyenne :
+{moyenne} Coins
+"""
+    )
+
+@bot.tree.command(
+    name="fortune",
+    description="Voir la richesse globale de TeRom-Brawl"
+)
+async def fortune(interaction: discord.Interaction):
+
+    cursor.execute("""
+    SELECT SUM(teromik_coins)
+    FROM joueurs
+    """)
+    total = cursor.fetchone()[0] or 0
+
+    cursor.execute("""
+    SELECT COUNT(*)
+    FROM joueurs
+    """)
+    nb_joueurs = cursor.fetchone()[0]
+
+    moyenne = round(total / nb_joueurs) if nb_joueurs > 0 else 0
+
+    cursor.execute("""
+    SELECT pseudo, teromik_coins
+    FROM joueurs
+    ORDER BY teromik_coins DESC
+    LIMIT 1
+    """)
+    riche = cursor.fetchone()
+
+    await interaction.response.send_message(
+        f"""
+💰 **Fortune de TeRom-Brawl**
+
+🪙 Coins en circulation :
+{total}
+
+👥 Joueurs inscrits :
+{nb_joueurs}
+
+📈 Fortune moyenne :
+{moyenne} Coins
+
+👑 Joueur le plus riche :
+{riche[0]} — {riche[1]} Coins
+"""
+    )
+
 bot.run(TOKEN)
