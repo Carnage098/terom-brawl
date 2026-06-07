@@ -1132,8 +1132,7 @@ if objet == "booster_victoires":
 💰 Coins restants : {coins}
 """
         )
-
-        return
+return
 
     # TITRES ET TROPHÉE
 
