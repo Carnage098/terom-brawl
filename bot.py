@@ -1201,8 +1201,7 @@ cursor.execute("""
         user_id
     ))
 conn.commit()
-
-    await interaction.response.send_message(
+await interaction.response.send_message(
         f"""
 ✅ Achat effectué !
 
