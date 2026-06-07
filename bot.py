@@ -1,10 +1,10 @@
 import os
 import sqlite3
-import discord
 import random
+import discord
+
 from discord.ext import commands
 from discord import app_commands
-pending_matches = {}
 
 TOKEN = os.getenv("DISCORD_TOKEN")
 
@@ -14,14 +14,9 @@ bot = commands.Bot(
     command_prefix="!",
     intents=intents
 )
-
-# ==========================
-# BASE DE DONNÉES
-# ==========================
-
+pending_matches = {}
 conn = sqlite3.connect("database.db")
 cursor = conn.cursor()
-
 cursor.execute("""
 CREATE TABLE IF NOT EXISTS joueurs (
     user_id TEXT PRIMARY KEY,
@@ -30,11 +25,11 @@ CREATE TABLE IF NOT EXISTS joueurs (
     victoires INTEGER DEFAULT 0,
     defaites INTEGER DEFAULT 0,
     serie INTEGER DEFAULT 0,
+    streak_max INTEGER DEFAULT 0,
     grade TEXT DEFAULT 'Recrue',
     teromik_coins INTEGER DEFAULT 0
 )
 """)
-
 cursor.execute("""
 CREATE TABLE IF NOT EXISTS matchs (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -46,13 +41,7 @@ CREATE TABLE IF NOT EXISTS matchs (
     date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 )
 """)
-
 conn.commit()
-
-# ==========================
-# GRADES
-# ==========================
-
 def get_grade(points):
 
     grades = [
@@ -88,11 +77,6 @@ def get_grade(points):
     for seuil, grade in grades:
         if points >= seuil:
             return grade
-
-# ==========================
-# BOT READY
-# ==========================
-
 @bot.event
 async def on_ready():
 
@@ -103,10 +87,6 @@ async def on_ready():
         print(f"✅ {len(synced)} commandes synchronisées")
     except Exception as e:
         print(e)
-
-# ==========================
-# INSCRIPTION
-# ==========================
 
 @bot.tree.command(
     name="inscription",
@@ -126,34 +106,40 @@ async def inscription(interaction: discord.Interaction):
 
     if joueur:
         await interaction.response.send_message(
-            "❌ Tu es déjà inscrit.",
+            "❌ Tu es déjà inscrit à TeRom-Brawl.",
             ephemeral=True
         )
         return
 
     cursor.execute(
         """
-        INSERT INTO joueurs(user_id, pseudo)
+        INSERT INTO joueurs (
+            user_id,
+            pseudo
+        )
         VALUES (?, ?)
         """,
-        (user_id, pseudo)
+        (
+            user_id,
+            pseudo
+        )
     )
 
     conn.commit()
 
     await interaction.response.send_message(
-        """
+        f"""
 ⚔️ Bienvenue sur TeRom-Brawl !
+
+👤 Joueur : {pseudo}
 
 🎖️ Grade : Recrue
 📈 Points : 0
-        """,
+
+Bonne chance dans l'arène !
+""",
         ephemeral=True
     )
-
-# ==========================
-# PROFIL
-# ==========================
 
 @bot.tree.command(
     name="profil",
@@ -172,32 +158,36 @@ async def profil(interaction: discord.Interaction):
 
     if not joueur:
         await interaction.response.send_message(
-            "❌ Tu n'es pas inscrit.",
+            "❌ Tu n'es pas inscrit à TeRom-Brawl.",
             ephemeral=True
         )
         return
 
     points = joueur[2]
-    grade = get_grade(points)
     victoires = joueur[3]
     defaites = joueur[4]
-   cursor.execute("""
+    serie = joueur[5]
+    coins = joueur[8]
+    meilleure_serie = joueur[6]
+    grade = get_grade(points)
+
+    total_matchs = victoires + defaites
+
+    if total_matchs > 0:
+        ratio = round((victoires / total_matchs) * 100)
+    else:
+        ratio = 0
+
+    cursor.execute("""
     SELECT COUNT(*) + 1
     FROM joueurs
     WHERE points > ?
     """, (points,))
 
-rang = cursor.fetchone()[0]
-total = victoires + defaites
-
-if total > 0:
-    ratio = round((victoires / total) * 100)
-else:
-    ratio = 0
-
+    rang = cursor.fetchone()[0]
 
     await interaction.response.send_message(
-    f"""
+        f"""
 👤 **{joueur[1]}**
 
 🏆 Rang : #{rang}
@@ -210,17 +200,15 @@ else:
 
 📊 Ratio : {ratio}%
 
-🔥 Série : {joueur[5]}
+🔥 Série actuelle : {serie}
 
-🪙 TeRomik Coins : {joueur[7]}
+🏅 Meilleure série : {meilleure_serie}
+
+🪙 TeRomik Coins : {coins}
 """,
-    ephemeral=True
-)
-    
-        
-# ==========================
-# LANCEMENT
-# ==========================
+        ephemeral=True
+    )
+
 @bot.tree.command(
     name="resultat",
     description="Déclarer un résultat de duel"
@@ -261,7 +249,7 @@ async def resultat(
 
     if not joueur:
         await interaction.response.send_message(
-            "❌ Tu dois d'abord utiliser /inscription",
+            "❌ Tu dois être inscrit.",
             ephemeral=True
         )
         return
@@ -282,34 +270,34 @@ async def resultat(
 
     if not adversaire_db:
         await interaction.response.send_message(
-            "❌ Cet adversaire n'est pas inscrit à TeRom-Brawl.",
+            "❌ Cet adversaire n'est pas inscrit.",
             ephemeral=True
         )
         return
 
-    # Données du déclarant
+    gain = random.randint(10, 100)
+    perte = random.randint(1, 50)
+
     points_joueur = joueur[2]
     victoires_joueur = joueur[3]
     defaites_joueur = joueur[4]
     serie_joueur = joueur[5]
 
-    # Données adversaire
     points_adv = adversaire_db[2]
     victoires_adv = adversaire_db[3]
     defaites_adv = adversaire_db[4]
     serie_adv = adversaire_db[5]
 
-    gain = random.randint(10, 100)
-    perte = random.randint(1, 50)
-
     if resultat.value == "victoire":
 
-        # Joueur gagne
         points_joueur += gain
         victoires_joueur += 1
         serie_joueur += 1
+        streak_max_joueur = joueur[6]
 
-        # Adversaire perd
+if serie_joueur > streak_max_joueur:
+    streak_max_joueur = serie_joueur
+
         points_adv -= perte
 
         if points_adv < 0:
@@ -318,21 +306,11 @@ async def resultat(
         defaites_adv += 1
         serie_adv = 0
 
-        message = f"""
-⚔️ Duel enregistré
-
-🏆 Gagnant : {interaction.user.mention}
-📈 +{gain} points
-
-💀 Perdant : {adversaire.mention}
-📉 -{perte} points
-
-🎮 Plateforme : {plateforme.name}
-"""
+        gagnant = interaction.user.mention
+        perdant = adversaire.mention
 
     else:
 
-        # Joueur perd
         points_joueur -= perte
 
         if points_joueur < 0:
@@ -341,45 +319,36 @@ async def resultat(
         defaites_joueur += 1
         serie_joueur = 0
 
-        # Adversaire gagne
         points_adv += gain
         victoires_adv += 1
         serie_adv += 1
 
-        message = f"""
-⚔️ Duel enregistré
-
-🏆 Gagnant : {adversaire.mention}
-📈 +{gain} points
-
-💀 Perdant : {interaction.user.mention}
-📉 -{perte} points
-
-🎮 Plateforme : {plateforme.name}
-"""
+        gagnant = adversaire.mention
+        perdant = interaction.user.mention
 
     grade_joueur = get_grade(points_joueur)
     grade_adv = get_grade(points_adv)
 
-    # Mise à jour joueur
     cursor.execute("""
     UPDATE joueurs
     SET points=?,
-        victoires=?,
-        defaites=?,
-        serie=?,
-        grade=?
+    victoires=?,
+    defaites=?,
+    serie=?,
+    streak_max=?,
+    grade=?
     WHERE user_id=?
     """, (
-        points_joueur,
-        victoires_joueur,
-        defaites_joueur,
-        serie_joueur,
-        grade_joueur,
-        user_id
-    ))
+    points_joueur,
+    victoires_joueur,
+    defaites_joueur,
+    serie_joueur,
+    streak_max_joueur,
+    grade_joueur,
+    user_id
+)
+                   
 
-    # Mise à jour adversaire
     cursor.execute("""
     UPDATE joueurs
     SET points=?,
@@ -397,7 +366,6 @@ async def resultat(
         str(adversaire.id)
     ))
 
-    # Historique
     cursor.execute("""
     INSERT INTO matchs (
         joueur_id,
@@ -417,11 +385,19 @@ async def resultat(
 
     conn.commit()
 
-    await interaction.response.send_message(message)
+    await interaction.response.send_message(
+        f"""
+⚔️ Duel enregistré
 
-    conn.commit()
+🏆 Gagnant : {gagnant}
+📈 Gain : +{gain}
 
-    await interaction.response.send_message(message)
+💀 Perdant : {perdant}
+📉 Perte : -{perte}
+
+🎮 Plateforme : {plateforme.name}
+"""
+    )
 
 @bot.tree.command(
     name="classement",
@@ -430,7 +406,7 @@ async def resultat(
 async def classement(interaction: discord.Interaction):
 
     cursor.execute("""
-    SELECT pseudo, points, grade
+    SELECT pseudo, points
     FROM joueurs
     ORDER BY points DESC
     LIMIT 10
@@ -446,33 +422,37 @@ async def classement(interaction: discord.Interaction):
 
     message = "🏆 **Classement TeRom-Brawl**\n\n"
 
+    medailles = ["🥇", "🥈", "🥉"]
+
     for index, joueur in enumerate(joueurs, start=1):
 
         pseudo = joueur[0]
         points = joueur[1]
-        grade = joueur[2]
+
+        if index <= 3:
+            rang = medailles[index - 1]
+        else:
+            rang = f"#{index}"
 
         message += (
-            f"**#{index}** • {pseudo}\n"
-            f"🎖️ {grade} | 📈 {points} pts\n\n"
+            f"{rang} **{pseudo}**\n"
+            f"📈 {points} points\n\n"
         )
 
     await interaction.response.send_message(message)
+
 @bot.tree.command(
     name="stats",
-    description="Voir les statistiques globales de TeRom-Brawl"
+    description="Voir les statistiques globales"
 )
 async def stats(interaction: discord.Interaction):
 
-    # Nombre de joueurs
     cursor.execute("SELECT COUNT(*) FROM joueurs")
     nb_joueurs = cursor.fetchone()[0]
 
-    # Nombre de matchs
     cursor.execute("SELECT COUNT(*) FROM matchs")
     nb_matchs = cursor.fetchone()[0]
 
-    # Leader
     cursor.execute("""
     SELECT pseudo, points
     FROM joueurs
@@ -494,15 +474,18 @@ async def stats(interaction: discord.Interaction):
 📊 **Statistiques TeRom-Brawl**
 
 👥 Joueurs inscrits : **{nb_joueurs}**
-⚔️ Matchs enregistrés : **{nb_matchs}**
+
+⚔️ Matchs joués : **{nb_matchs}**
 
 👑 Leader actuel : **{leader_nom}**
-📈 Points : **{leader_points}**
+
+📈 Points du leader : **{leader_points}**
 """
     )
+
 @bot.tree.command(
     name="historique",
-    description="Voir les 10 derniers duels enregistrés"
+    description="Voir les 10 derniers duels"
 )
 async def historique(interaction: discord.Interaction):
 
@@ -510,8 +493,7 @@ async def historique(interaction: discord.Interaction):
     SELECT joueur_id,
            adversaire_id,
            plateforme,
-           resultat,
-           date
+           resultat
     FROM matchs
     ORDER BY id DESC
     LIMIT 10
@@ -527,36 +509,42 @@ async def historique(interaction: discord.Interaction):
 
     message = "⚔️ **10 derniers duels**\n\n"
 
+    plateformes = {
+        "omega": "YGO Omega",
+        "duelingbook": "Dueling Book",
+        "edopro": "EDOPro",
+        "masterduel": "Master Duel",
+        "remote": "Remote Duel"
+    }
+
     for match in matchs:
 
-        joueur = bot.get_user(int(match[0]))
-        adversaire = bot.get_user(int(match[1]))
+        joueur_id = int(match[0])
+        adversaire_id = int(match[1])
+
+        joueur = bot.get_user(joueur_id)
+        adversaire = bot.get_user(adversaire_id)
 
         joueur_nom = joueur.name if joueur else "Inconnu"
         adversaire_nom = adversaire.name if adversaire else "Inconnu"
 
-        resultat = "🏆 Victoire" if match[3] == "victoire" else "💀 Défaite"
+        resultat = "🏆" if match[3] == "victoire" else "💀"
 
-        plateformes = {
-            "omega": "YGO Omega",
-            "duelingbook": "Dueling Book",
-            "edopro": "EDOPro",
-            "masterduel": "Master Duel",
-            "remote": "Remote Duel"
-        }
-
-        plateforme = plateformes.get(match[2], match[2])
+        plateforme = plateformes.get(
+            match[2],
+            match[2]
+        )
 
         message += (
-            f"{resultat}\n"
-            f"👤 {joueur_nom} vs {adversaire_nom}\n"
+            f"{resultat} {joueur_nom} vs {adversaire_nom}\n"
             f"🎮 {plateforme}\n\n"
         )
 
     await interaction.response.send_message(message)
+
 @bot.tree.command(
     name="fiche",
-    description="Consulter la fiche d'un joueur"
+    description="Voir la fiche d'un joueur"
 )
 async def fiche(
     interaction: discord.Interaction,
@@ -572,13 +560,11 @@ async def fiche(
 
     if not data:
         await interaction.response.send_message(
-            "❌ Ce joueur n'est pas inscrit à TeRom-Brawl."
+            "❌ Ce joueur n'est pas inscrit."
         )
         return
 
     points = data[2]
-    grade = get_grade(points)
-
     victoires = data[3]
     defaites = data[4]
 
@@ -602,8 +588,7 @@ async def fiche(
 👤 **{joueur.display_name}**
 
 🏆 Rang : #{rang}
-
-🎖️ Grade : {grade}
+🎖️ Grade : {get_grade(points)}
 📈 Points : {points}
 
 ✅ Victoires : {victoires}
@@ -612,8 +597,7 @@ async def fiche(
 📊 Ratio : {ratio}%
 
 🔥 Série : {data[5]}
-
-🪙 TeRomik Coins : {data[7]}
+🪙 TeRomik Coins : {data[8]}
 """
     )
-bot.run(TOKEN)
+
