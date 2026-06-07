@@ -931,7 +931,7 @@ async def roulette(
         )
         return
 
-    # Alimenter le Jackpot Mondial
+    # Alimente le jackpot mondial
     cursor.execute("""
     SELECT montant
     FROM jackpot_global
@@ -947,32 +947,10 @@ async def roulette(
     SET montant=?
     WHERE id=1
     """, (jackpot,))
-if not joueur:
-        await interaction.response.send_message(
-            "❌ Tu n'es pas inscrit.",
-            ephemeral=True
-        )
-        return
 
-if mise <= 0:
-        await interaction.response.send_message(
-            "❌ Mise invalide.",
-            ephemeral=True
-        )
-        return
+    roll = random.randint(1, 100)
 
-coins = joueur[8]
-
-if mise > coins:
-        await interaction.response.send_message(
-            f"❌ Tu ne possèdes que {coins} TeRomik Coins.",
-            ephemeral=True
-        )
-        return
-
-roll = random.randint(1, 100)
-
-if roll <= 50:
+    if roll <= 50:
         gain = -mise
         resultat = "💥 PERDU"
 
@@ -992,7 +970,7 @@ if roll <= 50:
         gain = mise * 9
         resultat = "🎰 JACKPOT x10"
 
-       nouveaux_coins = coins + gain
+    nouveaux_coins = coins + gain
 
     jackpot_message = ""
 
