@@ -1213,16 +1213,15 @@ async def inventaire(interaction: discord.Interaction):
         message,
         ephemeral=True
     )
-    @bot.tree.command(
+  @bot.tree.command(
     name="equiper",
     description="Équiper un titre"
 )
-    async def equiper(
+async def equiper(
     interaction: discord.Interaction,
     titre: str
 ):
     user_id = str(interaction.user.id)
-
     cursor.execute("""
     SELECT objet
     FROM inventaire
