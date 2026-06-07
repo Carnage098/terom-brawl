@@ -1118,13 +1118,13 @@ if random.randint(1, 5000) == 1:
 
         nouveaux_coins += jackpot
 
-        cursor.execute("""
+                cursor.execute("""
         UPDATE jackpot_global
         SET montant=0
         WHERE id=1
         """)
 
-jackpot_message += """
+        jackpot_message += """
 
 🏆 TITRE SECRET DÉBLOQUÉ
 
@@ -1132,8 +1132,7 @@ jackpot_message += """
 
 "Les probabilités se sont inclinées devant toi."
 """
-
-    cursor.execute("""
+        cursor.execute("""
     UPDATE joueurs
     SET teromik_coins=?
     WHERE user_id=?
