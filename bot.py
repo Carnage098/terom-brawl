@@ -1158,8 +1158,8 @@ await interaction.response.send_message(
 """
     )
 return
-    conn.commit()
-    await interaction.response.send_message(
+conn.commit()
+await interaction.response.send_message(
             f"""
 ⚔️ Booster utilisé !
 
