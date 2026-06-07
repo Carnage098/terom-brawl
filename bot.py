@@ -1244,7 +1244,7 @@ async def inscrire_joueur(
 ):
 
     # Remplace par ton ID Discord
-    ADMIN_ID = 123456789012345678
+    ADMIN_ID = 1455129598571450452
 
     if interaction.user.id != ADMIN_ID:
         await interaction.response.send_message(
