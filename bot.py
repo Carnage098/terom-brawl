@@ -1125,7 +1125,8 @@ async def acheter(
         return
 
     # TITRES ET TROPHÉE
-noms = {
+
+    noms = {
         "teromik_fan": "❤️ TeRomik Fan",
         "terochasseur": "⚔️ Terochasseur de Duels",
         "maitre_tero": "🔥 Maître Tero",
@@ -1134,7 +1135,7 @@ noms = {
         "terrorageux_all_time": "🏆 Terrorageux All Time"
     }
 
-cursor.execute("""
+    cursor.execute("""
     INSERT INTO inventaire (
         user_id,
         objet
@@ -1145,18 +1146,19 @@ cursor.execute("""
         noms[objet]
     ))
 
-cursor.execute("""
-UPDATE joueurs
-SET teromik_coins=?
-WHERE user_id=?
-""", (
-    coins,
-    user_id
-))
+    cursor.execute("""
+    UPDATE joueurs
+    SET teromik_coins=?
+    WHERE user_id=?
+    """, (
+        coins,
+        user_id
+    ))
 
-conn.commit()
+    conn.commit()
+
     await interaction.response.send_message(
-    f"""
+        f"""
 ✅ Achat effectué !
 
 Objet obtenu :
@@ -1165,7 +1167,7 @@ Objet obtenu :
 
 💰 Coins restants : {coins}
 """
-)
+    )
 @bot.tree.command(
     name="inventaire",
     description="Voir ton inventaire"
