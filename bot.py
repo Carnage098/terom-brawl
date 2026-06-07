@@ -128,13 +128,12 @@ async def on_ready():
 )
 async def inscription(interaction: discord.Interaction):
 
+    await interaction.response.defer(ephemeral=True)
+
     user_id = str(interaction.user.id)
     pseudo = interaction.user.name
 
-    cursor.execute(
-        "SELECT * FROM joueurs WHERE user_id=?",
-        (user_id,)
-    )
+    ...
 
     joueur = cursor.fetchone()
 
@@ -161,7 +160,7 @@ async def inscription(interaction: discord.Interaction):
 
     conn.commit()
 
-    await interaction.response.send_message(
+    await interaction.followup.send(
         f"""
 ⚔️ Bienvenue sur TeRom-Brawl !
 
