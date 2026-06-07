@@ -181,19 +181,21 @@ async def inscription(interaction: discord.Interaction):
 )
 async def profil(interaction: discord.Interaction):
 
-cursor.execute(
-    "SELECT * FROM joueurs WHERE user_id=?",
-    (str(adversaire.id),)
-)
+    user_id = str(interaction.user.id)
 
-adversaire_db = cursor.fetchone()
-
-if not adversaire_db:
-    await interaction.response.send_message(
-        "❌ Cet adversaire n'est pas inscrit.",
-        ephemeral=True
+    cursor.execute(
+        "SELECT * FROM joueurs WHERE user_id=?",
+        (user_id,)
     )
-    return
+
+    joueur = cursor.fetchone()
+
+    if not joueur:
+        await interaction.response.send_message(
+            "❌ Tu n'es pas inscrit à TeRom-Brawl.",
+            ephemeral=True
+        )
+        return
 
     points = joueur[2]
     victoires = joueur[3]
