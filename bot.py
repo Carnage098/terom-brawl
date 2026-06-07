@@ -1234,5 +1234,65 @@ async def equiper(
         user_id,
         titre
     ))
+@bot.tree.command(
+    name="inscrire_joueur",
+    description="Inscrire un joueur à TeRom-Brawl"
+)
+async def inscrire_joueur(
+    interaction: discord.Interaction,
+    joueur: discord.Member
+):
 
+    # Remplace par ton ID Discord
+    ADMIN_ID = 123456789012345678
+
+    if interaction.user.id != ADMIN_ID:
+        await interaction.response.send_message(
+            "❌ Tu n'as pas la permission d'utiliser cette commande.",
+            ephemeral=True
+        )
+        return
+
+    user_id = str(joueur.id)
+    pseudo = joueur.name
+
+    cursor.execute(
+        "SELECT * FROM joueurs WHERE user_id=?",
+        (user_id,)
+    )
+
+    existe = cursor.fetchone()
+
+    if existe:
+        await interaction.response.send_message(
+            f"❌ {joueur.mention} est déjà inscrit.",
+            ephemeral=True
+        )
+        return
+
+    cursor.execute("""
+    INSERT INTO joueurs (
+        user_id,
+        pseudo
+    )
+    VALUES (?, ?)
+    """, (
+        user_id,
+        pseudo
+    ))
+
+    conn.commit()
+
+    await interaction.response.send_message(
+        f"""
+✅ Joueur inscrit
+
+👤 {joueur.mention}
+
+🎖️ Grade : Recrue
+📈 Points : 0
+🪙 Coins : 0
+"""
+    )
+    
 bot.run(TOKEN)
