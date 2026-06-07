@@ -304,22 +304,23 @@ async def resultat(
 
     gain = random.randint(10, 100)
     perte = random.randint(1, 50)
-    roll = random.randint(1, 100)
 
-if roll <= 50:
-    coins_gagnes = random.randint(50, 150)
+    def generer_coins():
+        roll = random.randint(1, 100)
 
-elif roll <= 80:
-    coins_gagnes = random.randint(151, 300)
+        if roll <= 50:
+            return random.randint(50, 150)
+        elif roll <= 80:
+            return random.randint(151, 300)
+        elif roll <= 95:
+            return random.randint(301, 600)
+        elif roll <= 99:
+            return random.randint(601, 900)
 
-elif roll <= 95:
-    coins_gagnes = random.randint(301, 600)
+        return 1000
 
-elif roll <= 99:
-    coins_gagnes = random.randint(601, 900)
-
-else:
-    coins_gagnes = 1000
+    coins_gagnes_joueur = generer_coins()
+    coins_gagnes_adv = generer_coins()
 
     points_joueur = joueur[2]
     victoires_joueur = joueur[3]
@@ -332,7 +333,8 @@ else:
     victoires_adv = adversaire_db[3]
     defaites_adv = adversaire_db[4]
     serie_adv = adversaire_db[5]
-    
+    coins_adv = adversaire_db[8]
+
     if resultat.value == "victoire":
 
         points_joueur += gain
@@ -370,9 +372,11 @@ else:
         gagnant = adversaire.mention
         perdant = interaction.user.mention
 
+    coins_joueur += coins_gagnes_joueur
+    coins_adv += coins_gagnes_adv
+
     grade_joueur = get_grade(points_joueur)
     grade_adv = get_grade(points_adv)
-    coins_joueur += coins_gagnes
 
     cursor.execute("""
     UPDATE joueurs
@@ -381,7 +385,8 @@ else:
         defaites=?,
         serie=?,
         streak_max=?,
-        grade=?
+        grade=?,
+        teromik_coins=?
     WHERE user_id=?
     """, (
         points_joueur,
@@ -390,6 +395,7 @@ else:
         serie_joueur,
         streak_max_joueur,
         grade_joueur,
+        coins_joueur,
         user_id
     ))
 
@@ -399,7 +405,8 @@ else:
         victoires=?,
         defaites=?,
         serie=?,
-        grade=?
+        grade=?,
+        teromik_coins=?
     WHERE user_id=?
     """, (
         points_adv,
@@ -407,6 +414,7 @@ else:
         defaites_adv,
         serie_adv,
         grade_adv,
+        coins_adv,
         str(adversaire.id)
     ))
 
@@ -426,18 +434,36 @@ else:
         resultat.value,
         gain if resultat.value == "victoire" else -perte
     ))
-    
+
     conn.commit()
+
+    jackpot_message = ""
+
+    if coins_gagnes_joueur == 1000:
+        jackpot_message += "\n🎰 JACKPOT DU JOUEUR ! +1000 Coins"
+
+    if coins_gagnes_adv == 1000:
+        jackpot_message += "\n🎰 JACKPOT DE L'ADVERSAIRE ! +1000 Coins"
 
     await interaction.response.send_message(
         f"""
 ⚔️ Duel enregistré
 
 🏆 Gagnant : {gagnant}
-📈 Gain : +{gain}
+📈 Gain : +{gain} points
 
 💀 Perdant : {perdant}
-📉 Perte : -{perte}
+📉 Perte : -{perte} points
+
+🪙 Récompenses
+
+👤 {interaction.user.display_name}
++{coins_gagnes_joueur} TeRomik Coins
+
+👤 {adversaire.display_name}
++{coins_gagnes_adv} TeRomik Coins
+
+{jackpot_message}
 
 🎮 Plateforme : {plateforme.name}
 """
