@@ -1142,7 +1142,6 @@ if objet == "booster_teromik":
     ))
 
     conn.commit()
-
     await interaction.response.send_message(
         f"""
 ✍️ Booster Signé par TeRomik utilisé !
