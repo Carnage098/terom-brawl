@@ -120,7 +120,12 @@ CREATE TABLE IF NOT EXISTS defis (
     cible_id TEXT
 )
 """)
-
+cursor.execute("""
+CREATE TABLE IF NOT EXISTS banque (
+    user_id TEXT PRIMARY KEY,
+    solde INTEGER DEFAULT 0
+)
+""")
 conn.commit()
 def get_grade(points):
 
