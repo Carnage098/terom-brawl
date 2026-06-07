@@ -88,6 +88,12 @@ CREATE TABLE IF NOT EXISTS titres (
     titre TEXT
 )
 """) 
+cursor.execute("""
+CREATE TABLE IF NOT EXISTS titres (
+    user_id TEXT PRIMARY KEY,
+    titre TEXT
+)
+""")
 conn.commit()
 def get_grade(points):
 
@@ -216,6 +222,31 @@ async def profil(interaction: discord.Interaction):
     coins = joueur[8]
     meilleure_serie = joueur[6]
     grade = get_grade(points)
+    cursor.execute("""
+SELECT objet
+FROM inventaire
+WHERE user_id=?
+AND objet='🏆 Terrorageux All Time'
+""", (user_id,))
+
+trophee = cursor.fetchone()
+
+if trophee:
+    ligne_trophee = "\n🏆 Terrorageux All Time\n"
+else:
+    ligne_trophee = ""
+    cursor.execute("""
+SELECT titre
+FROM titres
+WHERE user_id=?
+""", (user_id,))
+
+titre_data = cursor.fetchone()
+
+if titre_data:
+    titre = titre_data[0]
+else:
+    titre = "Aucun"
 
     total_matchs = victoires + defaites
 
@@ -237,6 +268,9 @@ async def profil(interaction: discord.Interaction):
 👤 **{joueur[1]}**
 
 🏆 Rang : #{rang}
+
+👑 Titre : {titre}
+{ligne_trophee}
 
 🎖️ Grade : {grade}
 📈 Points : {points}
@@ -1146,5 +1180,77 @@ Objet obtenu :
 💰 Coins restants : {coins}
 """
     )
+@bot.tree.command(
+    name="inventaire",
+    description="Voir ton inventaire"
+)
+async def inventaire(interaction: discord.Interaction):
 
+    user_id = str(interaction.user.id)
+
+    cursor.execute("""
+    SELECT objet
+    FROM inventaire
+    WHERE user_id=?
+    """, (user_id,))
+
+    objets = cursor.fetchall()
+
+    if not objets:
+        await interaction.response.send_message(
+            "🎒 Ton inventaire est vide.",
+            ephemeral=True
+        )
+        return
+
+    message = "🎒 **Inventaire TeRom-Brawl**\n\n"
+
+    for objet in objets:
+        message += f"• {objet[0]}\n"
+
+    await interaction.response.send_message(message)
+
+@bot.tree.command(
+    name="equiper",
+    description="Équiper un titre"
+)
+async def equiper(
+    interaction: discord.Interaction,
+    titre: str
+):
+
+    user_id = str(interaction.user.id)
+
+    cursor.execute("""
+    SELECT objet
+    FROM inventaire
+    WHERE user_id=?
+    """, (user_id,))
+
+    objets = [o[0] for o in cursor.fetchall()]
+
+    if titre not in objets:
+        await interaction.response.send_message(
+            "❌ Tu ne possèdes pas ce titre.",
+            ephemeral=True
+        )
+        return
+
+    cursor.execute("""
+    INSERT OR REPLACE INTO titres (
+        user_id,
+        titre
+    )
+    VALUES (?, ?)
+    """, (
+        user_id,
+        titre
+    ))
+
+    conn.commit()
+
+    await interaction.response.send_message(
+        f"👑 Titre équipé : {titre}"
+    )
+    
 bot.run(TOKEN)
