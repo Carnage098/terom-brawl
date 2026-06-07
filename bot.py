@@ -971,7 +971,6 @@ async def shop(interaction: discord.Interaction):
 🏆 Terrorageux All Time — 100000 Coins
 """
     )
-```python
 @bot.tree.command(
     name="acheter",
     description="Acheter un objet de la boutique"
