@@ -963,7 +963,7 @@ if mise <= 0:
 
 coins = joueur[8]
 
-    if mise > coins:
+if mise > coins:
         await interaction.response.send_message(
             f"❌ Tu ne possèdes que {coins} TeRomik Coins.",
             ephemeral=True
