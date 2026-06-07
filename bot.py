@@ -166,7 +166,7 @@ async def inscription(interaction: discord.Interaction):
         )
         return
 
-    cursor.execute(
+       cursor.execute(
         """
         INSERT INTO joueurs (
             user_id,
@@ -180,19 +180,19 @@ async def inscription(interaction: discord.Interaction):
         )
     )
 
-   
-conn.commit()
-cursor.execute("SELECT COUNT(*) FROM joueurs")
-print("JOUEURS :", cursor.fetchone()[0])
-    await interaction.followup.send(
-    f"⚔️ Bienvenue sur TeRom-Brawl !\n\n"
-    f"👤 Joueur : {pseudo}\n\n"
-    f"🎖️ Grade : Recrue\n"
-    f"📈 Points : 0\n\n"
-    f"Bonne chance dans l'arène !",
-    ephemeral=True
-)
+    conn.commit()
 
+    cursor.execute("SELECT COUNT(*) FROM joueurs")
+    print("JOUEURS :", cursor.fetchone()[0])
+
+    await interaction.followup.send(
+        f"⚔️ Bienvenue sur TeRom-Brawl !\n\n"
+        f"👤 Joueur : {pseudo}\n\n"
+        f"🎖️ Grade : Recrue\n"
+        f"📈 Points : 0\n\n"
+        f"Bonne chance dans l'arène !",
+        ephemeral=True
+    )
 @bot.tree.command(
     name="profil",
     description="Voir ton profil"
