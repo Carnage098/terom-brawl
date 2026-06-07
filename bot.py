@@ -182,7 +182,7 @@ async def inscription(interaction: discord.Interaction):
 
    
 conn.commit()
-    cursor.execute("SELECT COUNT(*) FROM joueurs")
+cursor.execute("SELECT COUNT(*) FROM joueurs")
     print("JOUEURS :", cursor.fetchone()[0])
     await interaction.followup.send(
     f"⚔️ Bienvenue sur TeRom-Brawl !\n\n"
