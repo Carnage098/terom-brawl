@@ -288,21 +288,21 @@ async def resultat(
         )
         return
 
-    if adversaire.id == interaction.user.id:
+if adversaire.id == interaction.user.id:
         await interaction.response.send_message(
             "❌ Tu ne peux pas te défier toi-même.",
             ephemeral=True
         )
         return
 
-      cursor.execute(
+cursor.execute(
         "SELECT * FROM joueurs WHERE user_id=?",
         (str(adversaire.id),)
     )
 
-    adversaire_db = cursor.fetchone()
+adversaire_db = cursor.fetchone()
 
-    if not adversaire_db:
+if not adversaire_db:
         await interaction.response.send_message(
             "❌ Cet adversaire n'est pas inscrit.",
             ephemeral=True
