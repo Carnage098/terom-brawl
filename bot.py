@@ -831,5 +831,97 @@ async def daily(interaction: discord.Interaction):
 💰 Nouveau solde : {nouveaux_coins}
 """
     )
-    
+
+@bot.tree.command(
+    name="roulette",
+    description="Miser des TeRomik Coins"
+)
+async def roulette(
+    interaction: discord.Interaction,
+    mise: int
+):
+
+    user_id = str(interaction.user.id)
+
+    cursor.execute(
+        "SELECT * FROM joueurs WHERE user_id=?",
+        (user_id,)
+    )
+
+    joueur = cursor.fetchone()
+
+    if not joueur:
+        await interaction.response.send_message(
+            "❌ Tu n'es pas inscrit.",
+            ephemeral=True
+        )
+        return
+
+    if mise <= 0:
+        await interaction.response.send_message(
+            "❌ Mise invalide.",
+            ephemeral=True
+        )
+        return
+
+    coins = joueur[8]
+
+    if mise > coins:
+        await interaction.response.send_message(
+            f"❌ Tu ne possèdes que {coins} TeRomik Coins.",
+            ephemeral=True
+        )
+        return
+
+    roll = random.randint(1, 100)
+
+    if roll <= 50:
+        gain = -mise
+        resultat = "💥 PERDU"
+
+    elif roll <= 85:
+        gain = mise
+        resultat = "🎉 GAGNÉ x2"
+
+    elif roll <= 95:
+        gain = mise * 2
+        resultat = "🔥 GAGNÉ x3"
+
+    elif roll <= 99:
+        gain = mise * 4
+        resultat = "💎 GAGNÉ x5"
+
+    else:
+        gain = mise * 9
+        resultat = "🎰 JACKPOT x10"
+
+    nouveaux_coins = coins + gain
+
+    cursor.execute("""
+    UPDATE joueurs
+    SET teromik_coins=?
+    WHERE user_id=?
+    """, (
+        nouveaux_coins,
+        user_id
+    ))
+
+    conn.commit()
+
+    await interaction.response.send_message(
+        f"""
+🎲 Roulette TeRom-Brawl
+
+👤 {interaction.user.mention}
+
+💰 Mise : {mise}
+
+{resultat}
+
+🪙 Variation : {gain:+}
+
+💼 Nouveau solde : {nouveaux_coins}
+"""
+    )
+
 bot.run(TOKEN)
