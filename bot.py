@@ -1004,7 +1004,6 @@ async def daily(interaction: discord.Interaction):
 💰 Nouveau solde : {nouveaux_coins}
 """
     )
-
 @bot.tree.command(
     name="roulette",
     description="Miser des TeRomik Coins"
@@ -1046,23 +1045,24 @@ async def roulette(
         )
         return
 
-
+    # Alimente le Jackpot Mondial
     cursor.execute("""
     SELECT montant
     FROM jackpot_global
     WHERE id=1
     """)
 
-    jackpot = cursor.fetchone()[0]
+    jackpot_global = cursor.fetchone()[0]
 
-    jackpot += mise // 20
+    jackpot_global += mise // 20
 
     cursor.execute("""
     UPDATE jackpot_global
     SET montant=?
     WHERE id=1
-    """, (jackpot,))
+    """, (jackpot_global,))
 
+    # Roulette
     roll = random.randint(1, 100)
 
     if roll <= 50:
@@ -1088,24 +1088,8 @@ async def roulette(
     nouveaux_coins = coins + gain
 
     jackpot_message = ""
-cursor.execute("""
-INSERT INTO inventaire (
-    user_id,
-    objet
-)
-SELECT ?, ?
-WHERE NOT EXISTS (
-    SELECT 1
-    FROM inventaire
-    WHERE user_id=?
-    AND objet=?
-)
-""", (
-    user_id,
-    "🎰 Béni du Jackpot",
-    user_id,
-    "🎰 Béni du Jackpot"
-))
+
+    # Jackpot Mondial
     if random.randint(1, 5000) == 1:
 
         cursor.execute("""
@@ -1114,9 +1098,9 @@ WHERE NOT EXISTS (
         WHERE id=1
         """)
 
-        jackpot = cursor.fetchone()[0]
+        jackpot_global = cursor.fetchone()[0]
 
-        nouveaux_coins += jackpot
+        nouveaux_coins += jackpot_global
 
         cursor.execute("""
         UPDATE jackpot_global
@@ -1124,14 +1108,47 @@ WHERE NOT EXISTS (
         WHERE id=1
         """)
 
-        jackpot_message += """
+        # Titre secret
+        cursor.execute("""
+        INSERT INTO inventaire (
+            user_id,
+            objet
+        )
+        SELECT ?, ?
+        WHERE NOT EXISTS (
+            SELECT 1
+            FROM inventaire
+            WHERE user_id=?
+            AND objet=?
+        )
+        """, (
+            user_id,
+            "🎰 Béni du Jackpot",
+            user_id,
+            "🎰 Béni du Jackpot"
+        ))
+
+        jackpot_message = f"""
+
+🎰 JACKPOT MONDIAL !
+
+💰 Gain : {jackpot_global} Coins
 
 🏆 TITRE SECRET DÉBLOQUÉ
 
 🎰 Béni du Jackpot
 
-"Les probabilités se sont inclinées devant toi."
+📜 "Les probabilités se sont inclinées devant toi."
 """
+
+    cursor.execute("""
+    UPDATE joueurs
+    SET teromik_coins=?
+    WHERE user_id=?
+    """, (
+        nouveaux_coins,
+        user_id
+    ))
 
     conn.commit()
 
