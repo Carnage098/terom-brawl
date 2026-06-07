@@ -504,7 +504,7 @@ VALUES (?, ?, ?, ?, ?)
 ))
 conn.commit()
 
-    jackpot_message = ""
+jackpot_message = ""
 
     if coins_gagnes_joueur == 1000:
         jackpot_message += "\n🎰 JACKPOT DU JOUEUR ! +1000 Coins"
