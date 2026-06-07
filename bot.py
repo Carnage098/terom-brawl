@@ -1122,7 +1122,7 @@ if random.randint(1, 5000) == 1:
         WHERE id=1
         """)
 
-       jackpot_message += """
+jackpot_message += """
 
 🏆 TITRE SECRET DÉBLOQUÉ
 
