@@ -910,7 +910,21 @@ async def roulette(
         "SELECT * FROM joueurs WHERE user_id=?",
         (user_id,)
     )
+cursor.execute("""
+SELECT montant
+FROM jackpot_global
+WHERE id=1
+""")
 
+jackpot = cursor.fetchone()[0]
+
+jackpot += mise // 20
+
+cursor.execute("""
+UPDATE jackpot_global
+SET montant=?
+WHERE id=1
+""", (jackpot,))
     joueur = cursor.fetchone()
 
     if not joueur:
