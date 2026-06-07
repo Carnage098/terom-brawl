@@ -983,7 +983,7 @@ async def acheter(
     interaction: discord.Interaction,
     objet: app_commands.Choice[str]
 ):
-@app_commands.choices(
+    @app_commands.choices(
     objet=[
         app_commands.Choice(
             name="📈 Booster Points (2000 Coins)",
