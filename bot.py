@@ -1104,7 +1104,7 @@ WHERE NOT EXISTS (
     user_id,
     "🎰 Béni du Jackpot"
 ))
-    if random.randint(1, 5000) == 1:
+if random.randint(1, 5000) == 1:
 
         cursor.execute("""
         SELECT montant
