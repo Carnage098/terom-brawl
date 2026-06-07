@@ -278,7 +278,6 @@ async def resultat(
         "SELECT * FROM joueurs WHERE user_id=?",
         (user_id,)
     )
-
     joueur = cursor.fetchone()
 
     if not joueur:
@@ -288,43 +287,42 @@ async def resultat(
         )
         return
 
-if adversaire.id == interaction.user.id:
+    if adversaire.id == interaction.user.id:
         await interaction.response.send_message(
             "❌ Tu ne peux pas te défier toi-même.",
             ephemeral=True
         )
         return
 
-cursor.execute(
+    cursor.execute(
         "SELECT * FROM joueurs WHERE user_id=?",
         (str(adversaire.id),)
     )
+    adversaire_db = cursor.fetchone()
 
-adversaire_db = cursor.fetchone()
-
-if not adversaire_db:
+    if not adversaire_db:
         await interaction.response.send_message(
             "❌ Cet adversaire n'est pas inscrit.",
             ephemeral=True
         )
         return
 
-gain = random.randint(10, 100)
-perte = random.randint(1, 50)
+    gain = random.randint(10, 100)
+    perte = random.randint(1, 50)
 
-def generer_coins():
-    roll = random.randint(1, 100)
+    def generer_coins():
+        roll = random.randint(1, 100)
 
-    if roll <= 50:
+        if roll <= 50:
             return random.randint(50, 150)
-    elif roll <= 80:
+        elif roll <= 80:
             return random.randint(151, 300)
-    elif roll <= 95:
+        elif roll <= 95:
             return random.randint(301, 600)
-    elif roll <= 99:
+        elif roll <= 99:
             return random.randint(601, 900)
 
-    return 1000
+        return 1000
 
     coins_gagnes_joueur = generer_coins()
     coins_gagnes_adv = generer_coins()
@@ -343,7 +341,6 @@ def generer_coins():
     coins_adv = adversaire_db[8]
 
     if resultat.value == "victoire":
-
         points_joueur += gain
         victoires_joueur += 1
         serie_joueur += 1
@@ -351,11 +348,7 @@ def generer_coins():
         if serie_joueur > streak_max_joueur:
             streak_max_joueur = serie_joueur
 
-        points_adv -= perte
-
-        if points_adv < 0:
-            points_adv = 0
-
+        points_adv = max(0, points_adv - perte)
         defaites_adv += 1
         serie_adv = 0
 
@@ -363,12 +356,7 @@ def generer_coins():
         perdant = adversaire.mention
 
     else:
-
-        points_joueur -= perte
-
-        if points_joueur < 0:
-            points_joueur = 0
-
+        points_joueur = max(0, points_joueur - perte)
         defaites_joueur += 1
         serie_joueur = 0
 
@@ -453,29 +441,16 @@ def generer_coins():
         jackpot_message += "\n🎰 JACKPOT DE L'ADVERSAIRE ! +1000 Coins"
 
     await interaction.response.send_message(
-        f"""
-⚔️ Duel enregistré
-
-🏆 Gagnant : {gagnant}
-📈 Gain : +{gain} points
-
-💀 Perdant : {perdant}
-📉 Perte : -{perte} points
-
-🪙 Récompenses
-
-👤 {interaction.user.display_name}
-+{coins_gagnes_joueur} TeRomik Coins
-
-👤 {adversaire.display_name}
-+{coins_gagnes_adv} TeRomik Coins
-
-{jackpot_message}
-
-🎮 Plateforme : {plateforme.name}
-"""
-    )
-
+        f"⚔️ Duel enregistré\n\n"
+        f"🏆 Gagnant : {gagnant}\n"
+        f"📈 Gain : +{gain} points\n\n"
+        f"💀 Perdant : {perdant}\n"
+        f"📉 Perte : -{perte} points\n\n"
+        f"👤 {interaction.user.display_name} : +{coins_gagnes_joueur} Coins\n"
+        f"👤 {adversaire.display_name} : +{coins_gagnes_adv} Coins\n"
+        f"{jackpot_message}\n\n"
+        f"🎮 Plateforme : {plateforme.name}"
+    ) 
 @bot.tree.command(
     name="classement",
     description="Voir le classement TeRom-Brawl"
