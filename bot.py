@@ -519,124 +519,126 @@ async def resultat(
         plateforme.value,
         datetime.now().strftime("%d/%m/%Y %H:%M")
     ))
-cursor.execute("""
-INSERT INTO historique_duels (
-    joueur1,
-    joueur2,
-    resultat,
-    plateforme,
-    date
-)
-VALUES (?, ?, ?, ?, ?)
-""", (
-    interaction.user.display_name,
-    adversaire.display_name,
-    resultat.value,
-    plateforme.value,
-    datetime.now().strftime("%d/%m/%Y %H:%M")
-))
-# ⚔️ Centurion (100 victoires)
-
-if victoires_joueur >= 100:
-
     cursor.execute("""
-    INSERT INTO inventaire (
-        user_id,
-        objet
+    INSERT INTO historique_duels (
+        joueur1,
+        joueur2,
+        resultat,
+        plateforme,
+        date
     )
-    SELECT ?, ?
-    WHERE NOT EXISTS (
-        SELECT 1
-        FROM inventaire
-        WHERE user_id=?
-        AND objet=?
-    )
+    VALUES (?, ?, ?, ?, ?)
     """, (
-        user_id,
-        "⚔️ Centurion",
-        user_id,
-        "⚔️ Centurion"
+        interaction.user.display_name,
+        adversaire.display_name,
+        resultat.value,
+        plateforme.value,
+        datetime.now().strftime("%d/%m/%Y %H:%M")
     ))
 
-# 🔥 Invaincu (20 victoires de suite)
+    # ⚔️ Centurion
 
-if streak_max_joueur >= 20:
+    if victoires_joueur >= 100:
 
-    cursor.execute("""
-    INSERT INTO inventaire (
-        user_id,
-        objet
-    )
-    SELECT ?, ?
-    WHERE NOT EXISTS (
-        SELECT 1
-        FROM inventaire
-        WHERE user_id=?
-        AND objet=?
-    )
-    """, (
-        user_id,
-        "🔥 Invaincu",
-        user_id,
-        "🔥 Invaincu"
-    ))
+        cursor.execute("""
+        INSERT INTO inventaire (
+            user_id,
+            objet
+        )
+        SELECT ?, ?
+        WHERE NOT EXISTS (
+            SELECT 1
+            FROM inventaire
+            WHERE user_id=?
+            AND objet=?
+        )
+        """, (
+            user_id,
+            "⚔️ Centurion",
+            user_id,
+            "⚔️ Centurion"
+        ))
 
-# 💰 Magnat (100 000 Coins)
+    # 🔥 Invaincu
 
-if coins_joueur >= 100000:
+    if streak_max_joueur >= 20:
 
-    cursor.execute("""
-    INSERT INTO inventaire (
-        user_id,
-        objet
-    )
-    SELECT ?, ?
-    WHERE NOT EXISTS (
-        SELECT 1
-        FROM inventaire
-        WHERE user_id=?
-        AND objet=?
-    )
-    """, (
-        user_id,
-        "💰 Magnat",
-        user_id,
-        "💰 Magnat"
-    ))
+        cursor.execute("""
+        INSERT INTO inventaire (
+            user_id,
+            objet
+        )
+        SELECT ?, ?
+        WHERE NOT EXISTS (
+            SELECT 1
+            FROM inventaire
+            WHERE user_id=?
+            AND objet=?
+        )
+        """, (
+            user_id,
+            "🔥 Invaincu",
+            user_id,
+            "🔥 Invaincu"
+        ))
 
-# ☠️ Terrorageux (100 000 points)
+    # 💰 Magnat
 
-if points_joueur >= 100000:
+    if coins_joueur >= 100000:
 
-    cursor.execute("""
-    INSERT INTO inventaire (
-        user_id,
-        objet
-    )
-    SELECT ?, ?
-    WHERE NOT EXISTS (
-        SELECT 1
-        FROM inventaire
-        WHERE user_id=?
-        AND objet=?
-    )
-    """, (
-        user_id,
-        "☠️ Terrorageux",
-        user_id,
-        "☠️ Terrorageux"
-    ))
+        cursor.execute("""
+        INSERT INTO inventaire (
+            user_id,
+            objet
+        )
+        SELECT ?, ?
+        WHERE NOT EXISTS (
+            SELECT 1
+            FROM inventaire
+            WHERE user_id=?
+            AND objet=?
+        )
+        """, (
+            user_id,
+            "💰 Magnat",
+            user_id,
+            "💰 Magnat"
+        ))
+
+    # ☠️ Terrorageux
+
+    if points_joueur >= 100000:
+
+        cursor.execute("""
+        INSERT INTO inventaire (
+            user_id,
+            objet
+        )
+        SELECT ?, ?
+        WHERE NOT EXISTS (
+            SELECT 1
+            FROM inventaire
+            WHERE user_id=?
+            AND objet=?
+        )
+        """, (
+            user_id,
+            "☠️ Terrorageux",
+            user_id,
+            "☠️ Terrorageux"
+        ))
+
     conn.commit()
 
-        jackpot_message = ""
+    jackpot_message = ""
 
-        if coins_gagnes_joueur == 1000:
+    if coins_gagnes_joueur == 1000:
         jackpot_message += "\n🎰 JACKPOT DU JOUEUR ! +1000 Coins"
 
-        if coins_gagnes_adv == 1000:
-            jackpot_message += "\n🎰 JACKPOT DE L'ADVERSAIRE ! +1000 Coins"
+    if coins_gagnes_adv == 1000:
+        jackpot_message += "\n🎰 JACKPOT DE L'ADVERSAIRE ! +1000 Coins"
 
-        await interaction.response.send_message(
+    await interaction.response.send_message(
         f"⚔️ Duel enregistré\n\n"
         f"🏆 Gagnant : {gagnant}\n"
         f"📈 Gain : +{gain} points\n\n"
