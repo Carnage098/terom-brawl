@@ -1714,48 +1714,7 @@ async def topcoins(interaction: discord.Interaction):
 
     await interaction.response.send_message(message)
 
-@bot.tree.command(
-    name="fortune",
-    description="Voir la richesse globale de TeRom-Brawl"
-)
-async def fortune(interaction: discord.Interaction):
 
-    cursor.execute("""
-    SELECT SUM(teromik_coins)
-    FROM joueurs
-    """)
-
-    total = cursor.fetchone()[0]
-
-    if total is None:
-        total = 0
-
-    cursor.execute("""
-    SELECT COUNT(*)
-    FROM joueurs
-    """)
-
-    nb_joueurs = cursor.fetchone()[0]
-
-    moyenne = 0
-
-    if nb_joueurs > 0:
-        moyenne = round(total / nb_joueurs)
-
-    await interaction.response.send_message(
-        f"""
-💰 **Fortune de TeRom-Brawl**
-
-🪙 Coins en circulation :
-{total}
-
-👥 Joueurs inscrits :
-{nb_joueurs}
-
-📈 Fortune moyenne :
-{moyenne} Coins
-"""
-    )
 
 @bot.tree.command(
     name="fortune",
