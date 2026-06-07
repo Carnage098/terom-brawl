@@ -5,3 +5,18 @@ CREATE TABLE IF NOT EXISTS saisons (
     date_fin TEXT,
     active INTEGER DEFAULT 1
 )
+
+CREATE TABLE IF NOT EXISTS trophees (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    joueur_id TEXT,
+    nom TEXT,
+    date_obtention TEXT
+)
+CREATE TABLE IF NOT EXISTS equipes (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    nom TEXT UNIQUE,
+    points INTEGER DEFAULT 0
+)
+ALTER TABLE joueurs
+ADD COLUMN equipe_id INTEGER
+
