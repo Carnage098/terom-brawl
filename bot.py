@@ -626,4 +626,4 @@ async def fiche(
 🪙 TeRomik Coins : {data[8]}
 """
     )
-
+bot.run(TOKEN)
