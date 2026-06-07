@@ -383,7 +383,7 @@ cursor.execute("""
         gain if resultat.value == "victoire" else -perte
     ))
 
-    conn.commit()
+conn.commit()
 
     await interaction.response.send_message(
         f"""
