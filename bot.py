@@ -1108,23 +1108,23 @@ WHERE NOT EXISTS (
 ))
 if random.randint(1, 5000) == 1:
 
-        cursor.execute("""
-        SELECT montant
-        FROM jackpot_global
-        WHERE id=1
-        """)
+    cursor.execute("""
+    SELECT montant
+    FROM jackpot_global
+    WHERE id=1
+    """)
 
-        jackpot = cursor.fetchone()[0]
+    jackpot = cursor.fetchone()[0]
 
-        nouveaux_coins += jackpot
+    nouveaux_coins += jackpot
 
-                cursor.execute("""
-        UPDATE jackpot_global
-        SET montant=0
-        WHERE id=1
-        """)
+    cursor.execute("""
+    UPDATE jackpot_global
+    SET montant=0
+    WHERE id=1
+    """)
 
-        jackpot_message += """
+    jackpot_message += """
 
 🏆 TITRE SECRET DÉBLOQUÉ
 
@@ -1132,14 +1132,6 @@ if random.randint(1, 5000) == 1:
 
 "Les probabilités se sont inclinées devant toi."
 """
-        cursor.execute("""
-    UPDATE joueurs
-    SET teromik_coins=?
-    WHERE user_id=?
-    """, (
-        nouveaux_coins,
-        user_id
-    ))
 
     conn.commit()
 
