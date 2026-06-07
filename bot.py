@@ -41,6 +41,33 @@ CREATE TABLE IF NOT EXISTS matchs (
     date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 )
 """)
+cursor.execute("""
+CREATE TABLE IF NOT EXISTS saisons (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    nom TEXT,
+    date_debut TEXT,
+    date_fin TEXT,
+    active INTEGER DEFAULT 1
+)
+""")
+
+cursor.execute("""
+CREATE TABLE IF NOT EXISTS trophees (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    joueur_id TEXT,
+    nom TEXT,
+    date_obtention TEXT
+)
+""")
+
+cursor.execute("""
+CREATE TABLE IF NOT EXISTS equipes (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    nom TEXT UNIQUE,
+    points INTEGER DEFAULT 0
+)
+""")
+
 conn.commit()
 def get_grade(points):
 
