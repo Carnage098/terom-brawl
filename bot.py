@@ -1168,7 +1168,7 @@ await interaction.response.send_message(
 💰 Coins restants : {coins}
 """
         )
-    return
+return
 
     # TITRES ET TROPHÉE
 
