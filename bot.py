@@ -139,10 +139,10 @@ async def inscription(interaction: discord.Interaction):
     joueur = cursor.fetchone()
 
     if joueur:
-        await interaction.response.send_message(
-            "❌ Tu es déjà inscrit à TeRom-Brawl.",
-            ephemeral=True
-        )
+       await interaction.followup.send(
+    "❌ Tu es déjà inscrit à TeRom-Brawl.",
+    ephemeral=True
+)
         return
 
     cursor.execute(
