@@ -1021,7 +1021,7 @@ async def acheter(
 ):objet = objet.value
 user_id = str(interaction.user.id)
 
-    cursor.execute(
+cursor.execute(
         "SELECT * FROM joueurs WHERE user_id=?",
         (user_id,)
     )
