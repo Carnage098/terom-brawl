@@ -1768,7 +1768,7 @@ async def defier(
     interaction: discord.Interaction,
     joueur: discord.Member
 ):
-
+    pending_matches[str(joueur.id)] = str(interaction.user.id)
     if joueur.id == interaction.user.id:
         await interaction.response.send_message(
             "❌ Tu ne peux pas te défier toi-même."
