@@ -1508,6 +1508,77 @@ async def face_a_face(
 """
     )
 
+@bot.tree.command(
+    name="face_a_face",
+    description="Voir ton historique contre un joueur"
+)
+async def face_a_face(
+    interaction: discord.Interaction,
+    joueur: discord.Member
+):
+
+    moi = interaction.user.display_name
+    lui = joueur.display_name
+
+    cursor.execute("""
+    SELECT joueur1, joueur2, resultat
+    FROM historique_duels
+    WHERE
+    (joueur1=? AND joueur2=?)
+    OR
+    (joueur1=? AND joueur2=?)
+    """, (
+        moi,
+        lui,
+        lui,
+        moi
+    ))
+
+    duels = cursor.fetchall()
+
+    if not duels:
+        await interaction.response.send_message(
+            "❌ Aucun affrontement trouvé."
+        )
+        return
+
+    mes_victoires = 0
+    ses_victoires = 0
+
+    for duel in duels:
+
+        joueur1 = duel[0]
+        joueur2 = duel[1]
+        resultat = duel[2]
+
+        if joueur1 == moi and resultat == "victoire":
+            mes_victoires += 1
+
+        elif joueur1 == lui and resultat == "victoire":
+            ses_victoires += 1
+
+        elif joueur1 == moi and resultat == "defaite":
+            ses_victoires += 1
+
+        elif joueur1 == lui and resultat == "defaite":
+            mes_victoires += 1
+
+    message = "🔥 **Rivalité Détectée !**\n\n"
+
+    if len(duels) >= 20:
+        message += "⚔️ Rivalité légendaire\n\n"
+    elif len(duels) >= 10:
+        message += "⚔️ Rivalité intense\n\n"
+    elif len(duels) >= 5:
+        message += "⚔️ Rivalité naissante\n\n"
+
+    message += (
+        f"👤 {moi} : {mes_victoires} victoires\n\n"
+        f"👤 {lui} : {ses_victoires} victoires\n\n"
+        f"📜 Total des affrontements : {len(duels)}"
+    )
+
+    await interaction.response.send_message(message)
 
     
 bot.run(TOKEN)
