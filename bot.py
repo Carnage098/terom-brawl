@@ -1019,7 +1019,7 @@ async def acheter(
     interaction: discord.Interaction,
     objet: app_commands.Choice[str]
 ):objet = objet.value
-    user_id = str(interaction.user.id)
+user_id = str(interaction.user.id)
 
     cursor.execute(
         "SELECT * FROM joueurs WHERE user_id=?",
