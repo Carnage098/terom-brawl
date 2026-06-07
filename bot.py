@@ -1233,7 +1233,6 @@ Objet obtenu :
 💰 Coins restants : {coins}
 """
     )
-```
 
 @bot.tree.command(
     name="equiper",
