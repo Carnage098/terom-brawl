@@ -982,7 +982,33 @@ WHERE id=1
         nouveaux_coins,
         user_id
     ))
+if random.randint(1, 5000) == 1:
 
+    cursor.execute("""
+    SELECT montant
+    FROM jackpot_global
+    WHERE id=1
+    """)
+
+    jackpot = cursor.fetchone()[0]
+
+    nouveaux_coins += jackpot
+
+    cursor.execute("""
+    UPDATE jackpot_global
+    SET montant=0
+    WHERE id=1
+    """)
+
+    jackpot_message = f"""
+🎰 JACKPOT MONDIAL !
+
+💰 Gain : {jackpot} Coins
+
+📜 "À ce stade, tu nous as tous détrônés."
+
+— Seito Kaiba & TeRomik
+"""
     conn.commit()
     await interaction.response.send_message(
     f"""
