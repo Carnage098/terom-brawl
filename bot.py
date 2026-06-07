@@ -1147,7 +1147,7 @@ noms = {
         "terrorageux_all_time": "🏆 Terrorageux All Time"
     }
 
-    cursor.execute("""
+cursor.execute("""
     INSERT INTO inventaire (
         user_id,
         objet
