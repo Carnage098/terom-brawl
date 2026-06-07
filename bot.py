@@ -2492,66 +2492,47 @@ async def recuperer_investissement(
         multiplicateur = 0.50
         evenement = "⚠️ Krach financier (-50%)"
 
-    else:
+       else:
 
-cursor.execute("""
-    UPDATE investissements
-    SET montant = CAST(montant * 0.80 AS INTEGER)
-    """)
+        cursor.execute("""
+        UPDATE investissements
+        SET montant = CAST(montant * 0.80 AS INTEGER)
+        """)
 
-    conn.commit()
+        cursor.execute("""
+        INSERT INTO inventaire (
+            user_id,
+            objet
+        )
+        SELECT ?, ?
+        WHERE NOT EXISTS (
+            SELECT 1
+            FROM inventaire
+            WHERE user_id=?
+            AND objet=?
+        )
+        """, (
+            user_id,
+            "💼 Survivant du Krach",
+            user_id,
+            "💼 Survivant du Krach"
+        ))
 
-    multiplicateur = 0.10
+        conn.commit()
 
-    evenement = """
+        multiplicateur = 0.10
+
+        evenement = """
 🌍 CRISE ÉCONOMIQUE MONDIALE
 
 📉 Tous les investissements du serveur perdent 20%
 
+🏆 TITRE SECRET DÉBLOQUÉ
+
+💼 Survivant du Krach
+
 💥 Les marchés se sont effondrés.
 """
-
-    gain_final = int(montant * multiplicateur)
-
-    cursor.execute(
-        "SELECT * FROM joueurs WHERE user_id=?",
-        (user_id,)
-    )
-
-    joueur = cursor.fetchone()
-
-    nouveaux_coins = joueur[8] + gain_final
-
-    cursor.execute("""
-    UPDATE joueurs
-    SET teromik_coins=?
-    WHERE user_id=?
-    """, (
-        nouveaux_coins,
-        user_id
-    ))
-
-    cursor.execute("""
-    UPDATE investissements
-    SET montant=0
-    WHERE user_id=?
-    """, (user_id,))
-
-    conn.commit()
-
-    await interaction.response.send_message(
-        f"""
-📈 Résultat de l'investissement
-
-{evenement}
-
-💰 Investissement initial : {montant}
-
-💵 Montant récupéré : {gain_final}
-
-🪙 Nouveau solde : {nouveaux_coins}
-"""
-    )
 @bot.tree.command(
     name="marche",
     description="Voir l'état du marché financier"
