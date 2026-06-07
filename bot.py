@@ -135,7 +135,6 @@ async def inscription(interaction: discord.Interaction):
     user_id = str(interaction.user.id)
     pseudo = interaction.user.name
 
-    ...
 
     joueur = cursor.fetchone()
 
