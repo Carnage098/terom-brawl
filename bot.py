@@ -180,12 +180,12 @@ async def profil(interaction: discord.Interaction):
     points = joueur[2]
     grade = get_grade(points)
     victoires = joueur[3]
-defaites = joueur[4]
+    defaites = joueur[4]
    cursor.execute("""
-SELECT COUNT(*) + 1
-FROM joueurs
-WHERE points > ?
-""", (points,))
+    SELECT COUNT(*) + 1
+    FROM joueurs
+    WHERE points > ?
+    """, (points,))
 
 rang = cursor.fetchone()[0]
 total = victoires + defaites
