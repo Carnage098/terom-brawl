@@ -150,7 +150,7 @@ async def inscription(interaction: discord.Interaction):
     await interaction.response.defer(ephemeral=True)
 
     user_id = str(interaction.user.id)
-    pseudo = interaction.user.name
+    pseudo = interaction.user.display_name
 
     cursor.execute(
         "SELECT * FROM joueurs WHERE user_id=?",
