@@ -1142,7 +1142,7 @@ cursor.execute("""
 
 conn.commit()
 
-    await interaction.response.send_message(
+await interaction.response.send_message(
         f"""
 🎲 Roulette TeRom-Brawl
 
