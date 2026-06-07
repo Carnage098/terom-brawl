@@ -312,19 +312,19 @@ if not adversaire_db:
 gain = random.randint(10, 100)
 perte = random.randint(1, 50)
 
-    def generer_coins():
-        roll = random.randint(1, 100)
+def generer_coins():
+    roll = random.randint(1, 100)
 
-        if roll <= 50:
+    if roll <= 50:
             return random.randint(50, 150)
-        elif roll <= 80:
+    elif roll <= 80:
             return random.randint(151, 300)
-        elif roll <= 95:
+    elif roll <= 95:
             return random.randint(301, 600)
-        elif roll <= 99:
+    elif roll <= 99:
             return random.randint(601, 900)
 
-        return 1000
+    return 1000
 
     coins_gagnes_joueur = generer_coins()
     coins_gagnes_adv = generer_coins()
