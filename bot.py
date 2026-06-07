@@ -295,19 +295,19 @@ async def resultat(
         )
         return
 
-   cursor.execute(
-    "SELECT * FROM joueurs WHERE user_id=?",
-    (str(adversaire.id),)
-)
-
-adversaire_db = cursor.fetchone()
-
-if not adversaire_db:
-    await interaction.response.send_message(
-        "❌ Cet adversaire n'est pas inscrit.",
-        ephemeral=True
+      cursor.execute(
+        "SELECT * FROM joueurs WHERE user_id=?",
+        (str(adversaire.id),)
     )
-    return
+
+    adversaire_db = cursor.fetchone()
+
+    if not adversaire_db:
+        await interaction.response.send_message(
+            "❌ Cet adversaire n'est pas inscrit.",
+            ephemeral=True
+        )
+        return
 
     gain = random.randint(10, 100)
     perte = random.randint(1, 50)
