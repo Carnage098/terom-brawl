@@ -38,7 +38,6 @@ try:
     """)
 except:
     pass
-""")
 cursor.execute("""
 CREATE TABLE IF NOT EXISTS matchs (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
