@@ -215,14 +215,15 @@ async def profil(interaction: discord.Interaction):
         )
         return
 
-    points = joueur[2]
-    victoires = joueur[3]
-    defaites = joueur[4]
-    serie = joueur[5]
-    coins = joueur[8]
-    meilleure_serie = joueur[6]
-    grade = get_grade(points)
-    cursor.execute("""
+points = joueur[2]
+victoires = joueur[3]
+defaites = joueur[4]
+serie = joueur[5]
+coins = joueur[8]
+meilleure_serie = joueur[6]
+grade = get_grade(points)
+
+cursor.execute("""
 SELECT objet
 FROM inventaire
 WHERE user_id=?
@@ -235,7 +236,8 @@ if trophee:
     ligne_trophee = "\n🏆 Terrorageux All Time\n"
 else:
     ligne_trophee = ""
-    cursor.execute("""
+
+cursor.execute("""
 SELECT titre
 FROM titres
 WHERE user_id=?
@@ -248,29 +250,29 @@ if titre_data:
 else:
     titre = "Aucun"
 
-    total_matchs = victoires + defaites
+total_matchs = victoires + defaites
 
-    if total_matchs > 0:
-        ratio = round((victoires / total_matchs) * 100)
-    else:
-        ratio = 0
+if total_matchs > 0:
+    ratio = round((victoires / total_matchs) * 100)
+else:
+    ratio = 0
 
-    cursor.execute("""
-    SELECT COUNT(*) + 1
-    FROM joueurs
-    WHERE points > ?
-    """, (points,))
+cursor.execute("""
+SELECT COUNT(*) + 1
+FROM joueurs
+WHERE points > ?
+""", (points,))
 
-    rang = cursor.fetchone()[0]
+rang = cursor.fetchone()[0]
 
-    await interaction.response.send_message(
-        f"""
+await interaction.response.send_message(
+    f"""
 👤 **{joueur[1]}**
-
-🏆 Rang : #{rang}
 
 👑 Titre : {titre}
 {ligne_trophee}
+
+🏆 Rang : #{rang}
 
 🎖️ Grade : {grade}
 📈 Points : {points}
@@ -286,9 +288,8 @@ else:
 
 🪙 TeRomik Coins : {coins}
 """,
-        ephemeral=True
-    )
-
+    ephemeral=True
+)
 @bot.tree.command(
     name="resultat",
     description="Déclarer un résultat de duel"
