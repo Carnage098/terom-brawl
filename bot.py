@@ -2407,7 +2407,22 @@ async def investir(
         coins - montant,
         user_id
     ))
+if random.randint(1, 10000) == 1:
 
+    cursor.execute("""
+    UPDATE investissements
+    SET montant = CAST(montant * 1.50 AS INTEGER)
+    """)
+
+    await interaction.channel.send(
+        """
+🚀 BOOM ÉCONOMIQUE MONDIAL
+
+📈 Tous les investissements gagnent +50 %
+
+💰 Les marchés sont en euphorie !
+"""
+    )
     conn.commit()
 
     await interaction.response.send_message(
