@@ -538,22 +538,8 @@ async def resultat(
         plateforme.value,
         datetime.now().strftime("%d/%m/%Y %H:%M")
     ))
-    cursor.execute("""
-    INSERT INTO historique_duels (
-        joueur1,
-        joueur2,
-        resultat,
-        plateforme,
-        date
-    )
-    VALUES (?, ?, ?, ?, ?)
-    """, (
-        interaction.user.display_name,
-        adversaire.display_name,
-        resultat.value,
-        plateforme.value,
-        datetime.now().strftime("%d/%m/%Y %H:%M")
-    ))
+   
+  
 
     # ⚔️ Centurion
 
@@ -646,6 +632,83 @@ async def resultat(
             user_id,
             "☠️ Terrorageux"
         ))
+    guerre_message = ""
+
+    for cible, guerre in list(guerres_actives.items()):
+
+        if not guerre.get("acceptee"):
+            continue
+
+        joueur1 = guerre["initiateur"]
+        joueur2 = cible
+
+        participants = {
+            joueur1,
+            joueur2
+        }
+
+        if {
+            user_id,
+            str(adversaire.id)
+        } == participants:
+
+            pot = guerre["montant"] * 2
+
+            gagnant_id = (
+                user_id
+                if resultat.value == "victoire"
+                else str(adversaire.id)
+            )
+
+            cursor.execute(
+                "SELECT teromik_coins FROM joueurs WHERE user_id=?",
+                (gagnant_id,)
+            )
+
+            coins_actuels = cursor.fetchone()[0]
+
+            cursor.execute("""
+            UPDATE joueurs
+            SET teromik_coins=?
+            WHERE user_id=?
+            """, (
+                coins_actuels + pot,
+                gagnant_id
+            ))
+
+            guerre_message = f"""
+
+⚔️ GUERRE ÉCONOMIQUE RÉSOLUE
+
+💰 Gain : +{pot} Coins
+"""
+
+            del guerres_actives[cible]
+
+            break
+
+    conn.commit()
+
+    jackpot_message = ""
+
+    if coins_gagnes_joueur == 1000:
+        jackpot_message += "\n🎰 JACKPOT DU JOUEUR ! +1000 Coins"
+
+    if coins_gagnes_adv == 1000:
+        jackpot_message += "\n🎰 JACKPOT DE L'ADVERSAIRE ! +1000 Coins"
+
+    await interaction.response.send_message(
+        f"⚔️ Duel enregistré\n\n"
+        f"🏆 Gagnant : {gagnant}\n"
+        f"📈 Gain : +{gain} points\n\n"
+        f"💀 Perdant : {perdant}\n"
+        f"📉 Perte : -{perte} points\n\n"
+        f"👤 {interaction.user.display_name} : +{coins_gagnes_joueur} Coins\n"
+        f"👤 {adversaire.display_name} : +{coins_gagnes_adv} Coins\n"
+        f"{jackpot_message}"
+        f"{guerre_message}\n\n"
+        f"🎮 Plateforme : {plateforme.name}"
+    )
 
     conn.commit()
 
