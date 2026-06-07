@@ -2477,9 +2477,24 @@ async def recuperer_investissement(
         multiplicateur = 0.50
         evenement = "⚠️ Krach financier (-50%)"
 
-    else:
-        multiplicateur = 0.10
-        evenement = "💥 CRISE ÉCONOMIQUE (-90%)"
+else:
+
+    cursor.execute("""
+    UPDATE investissements
+    SET montant = CAST(montant * 0.80 AS INTEGER)
+    """)
+
+    conn.commit()
+
+    multiplicateur = 0.10
+
+    evenement = """
+🌍 CRISE ÉCONOMIQUE MONDIALE
+
+📉 Tous les investissements du serveur perdent 20%
+
+💥 Les marchés se sont effondrés.
+"""
 
     gain_final = int(montant * multiplicateur)
 
