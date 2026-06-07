@@ -979,6 +979,50 @@ async def acheter(
     interaction: discord.Interaction,
     objet: str
 ):
+    async def acheter(
+    interaction: discord.Interaction,
+    objet: app_commands.Choice[str]
+):
+@app_commands.choices(
+    objet=[
+        app_commands.Choice(
+            name="📈 Booster Points (2000 Coins)",
+            value="booster_points"
+        ),
+        app_commands.Choice(
+            name="⚔️ Booster de Victoires (10000 Coins)",
+            value="booster_victoires"
+        ),
+        app_commands.Choice(
+            name="✍️ Booster Signé par TeRomik (15000 Coins)",
+            value="booster_teromik"
+        ),
+        app_commands.Choice(
+            name="❤️ TeRomik Fan (5000 Coins)",
+            value="teromik_fan"
+        ),
+        app_commands.Choice(
+            name="⚔️ Terochasseur de Duels (10000 Coins)",
+            value="terochasseur"
+        ),
+        app_commands.Choice(
+            name="🔥 Maître Tero (25000 Coins)",
+            value="maitre_tero"
+        ),
+        app_commands.Choice(
+            name="👑 TeroRoi de l'Arène (50000 Coins)",
+            value="teroroi"
+        ),
+        app_commands.Choice(
+            name="🌌 Tero-Seigneur des Dimensions (100000 Coins)",
+            value="tero_seigneur"
+        ),
+        app_commands.Choice(
+            name="🏆 Terrorageux All Time (100000 Coins)",
+            value="terrorageux_all_time"
+        )
+    ]
+) 
 
     user_id = str(interaction.user.id)
 
