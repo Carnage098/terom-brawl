@@ -760,5 +760,76 @@ async def convertir(
 🎖️ Grade actuel : {nouveau_grade}
 """
     )
+@bot.tree.command(
+    name="daily",
+    description="Récupérer ta récompense quotidienne"
+)
+async def daily(interaction: discord.Interaction):
 
+    user_id = str(interaction.user.id)
+
+    cursor.execute(
+        "SELECT * FROM joueurs WHERE user_id=?",
+        (user_id,)
+    )
+
+    joueur = cursor.fetchone()
+
+    if not joueur:
+        await interaction.response.send_message(
+            "❌ Tu n'es pas inscrit.",
+            ephemeral=True
+        )
+        return
+
+    dernier_daily = joueur[9]
+
+    maintenant = datetime.utcnow()
+
+    if dernier_daily:
+
+        dernier_daily = datetime.fromisoformat(dernier_daily)
+
+        if maintenant - dernier_daily < timedelta(hours=24):
+
+            restant = timedelta(hours=24) - (
+                maintenant - dernier_daily
+            )
+
+            heures = restant.seconds // 3600
+            minutes = (restant.seconds % 3600) // 60
+
+            await interaction.response.send_message(
+                f"⏳ Tu pourras récupérer ton prochain daily dans {heures}h {minutes}min.",
+                ephemeral=True
+            )
+            return
+
+    gain = random.randint(250, 1000)
+
+    nouveaux_coins = joueur[8] + gain
+
+    cursor.execute("""
+    UPDATE joueurs
+    SET teromik_coins=?,
+        dernier_daily=?
+    WHERE user_id=?
+    """, (
+        nouveaux_coins,
+        maintenant.isoformat(),
+        user_id
+    ))
+
+    conn.commit()
+
+    await interaction.response.send_message(
+        f"""
+🎁 Récompense quotidienne
+
+🪙 +{gain} TeRomik Coins
+
+💰 Nouveau solde : {nouveaux_coins}
+"""
+    )
+    
 bot.run(TOKEN)
