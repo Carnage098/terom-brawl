@@ -975,15 +975,7 @@ async def shop(interaction: discord.Interaction):
     name="acheter",
     description="Acheter un objet de la boutique"
 )
-async def acheter(
-    interaction: discord.Interaction,
-    objet: str
-):
-    async def acheter(
-    interaction: discord.Interaction,
-    objet: app_commands.Choice[str]
-):
-    @app_commands.choices(
+@app_commands.choices(
     objet=[
         app_commands.Choice(
             name="📈 Booster Points (2000 Coins)",
@@ -1022,8 +1014,11 @@ async def acheter(
             value="terrorageux_all_time"
         )
     ]
-) 
-
+)
+async def acheter(
+    interaction: discord.Interaction,
+    objet: app_commands.Choice[str]
+):objet = objet.value
     user_id = str(interaction.user.id)
 
     cursor.execute(
