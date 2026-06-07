@@ -330,7 +330,7 @@ grade_joueur = get_grade(points_joueur)
 grade_adv = get_grade(points_adv)
 
 
-    cursor.execute("""
+cursor.execute("""
     UPDATE joueurs
     SET points=?,
     victoires=?,
@@ -349,8 +349,7 @@ grade_adv = get_grade(points_adv)
     user_id
 ))
                    
-
-    cursor.execute("""
+cursor.execute("""
     UPDATE joueurs
     SET points=?,
         victoires=?,
