@@ -502,7 +502,7 @@ VALUES (?, ?, ?, ?, ?)
     plateforme,
     datetime.now().strftime("%d/%m/%Y %H:%M")
 ))
-    conn.commit()
+conn.commit()
 
     jackpot_message = ""
 
