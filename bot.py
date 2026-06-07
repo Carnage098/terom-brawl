@@ -237,36 +237,36 @@ if trophee:
 else:
     ligne_trophee = ""
 
-cursor.execute("""
-SELECT titre
-FROM titres
-WHERE user_id=?
-""", (user_id,))
+    cursor.execute("""
+    SELECT titre
+    FROM titres
+    WHERE user_id=?
+    """, (user_id,))
 
-titre_data = cursor.fetchone()
+    titre_data = cursor.fetchone()
 
-if titre_data:
-    titre = titre_data[0]
-else:
-    titre = "Aucun"
+    if titre_data:
+        titre = titre_data[0]
+    else:
+        titre = "Aucun"
 
-total_matchs = victoires + defaites
+    total_matchs = victoires + defaites
 
-if total_matchs > 0:
-    ratio = round((victoires / total_matchs) * 100)
-else:
-    ratio = 0
+    if total_matchs > 0:
+        ratio = round((victoires / total_matchs) * 100)
+    else:
+        ratio = 0
 
-cursor.execute("""
-SELECT COUNT(*) + 1
-FROM joueurs
-WHERE points > ?
-""", (points,))
+    cursor.execute("""
+    SELECT COUNT(*) + 1
+    FROM joueurs
+    WHERE points > ?
+    """, (points,))
 
-rang = cursor.fetchone()[0]
+    rang = cursor.fetchone()[0]
 
-await interaction.response.send_message(
-    f"""
+    await interaction.response.send_message(
+        f"""
 👤 **{joueur[1]}**
 
 👑 Titre : {titre}
@@ -288,8 +288,8 @@ await interaction.response.send_message(
 
 🪙 TeRomik Coins : {coins}
 """,
-    ephemeral=True
-)
+        ephemeral=True
+    )
 @bot.tree.command(
     name="resultat",
     description="Déclarer un résultat de duel"
