@@ -902,28 +902,51 @@ async def roulette(
     user_id = str(interaction.user.id)
 
     cursor.execute(
-    "SELECT * FROM joueurs WHERE user_id=?",
-    (user_id,)
-)
+        "SELECT * FROM joueurs WHERE user_id=?",
+        (user_id,)
+    )
 
-joueur = cursor.fetchone()
+    joueur = cursor.fetchone()
 
-cursor.execute("""
-SELECT montant
-FROM jackpot_global
-WHERE id=1
-""")
+    if not joueur:
+        await interaction.response.send_message(
+            "❌ Tu n'es pas inscrit.",
+            ephemeral=True
+        )
+        return
 
-jackpot = cursor.fetchone()[0]
+    if mise <= 0:
+        await interaction.response.send_message(
+            "❌ Mise invalide.",
+            ephemeral=True
+        )
+        return
 
-jackpot += mise // 20
+    coins = joueur[8]
 
-cursor.execute("""
-UPDATE jackpot_global
-SET montant=?
-WHERE id=1
-""", (jackpot,))
+    if mise > coins:
+        await interaction.response.send_message(
+            f"❌ Tu ne possèdes que {coins} TeRomik Coins.",
+            ephemeral=True
+        )
+        return
 
+    # Alimenter le Jackpot Mondial
+    cursor.execute("""
+    SELECT montant
+    FROM jackpot_global
+    WHERE id=1
+    """)
+
+    jackpot = cursor.fetchone()[0]
+
+    jackpot += mise // 20
+
+    cursor.execute("""
+    UPDATE jackpot_global
+    SET montant=?
+    WHERE id=1
+    """, (jackpot,))
 if not joueur:
         await interaction.response.send_message(
             "❌ Tu n'es pas inscrit.",
@@ -969,7 +992,38 @@ if not joueur:
         gain = mise * 9
         resultat = "🎰 JACKPOT x10"
 
-    nouveaux_coins = coins + gain
+       nouveaux_coins = coins + gain
+
+    jackpot_message = ""
+
+    if random.randint(1, 5000) == 1:
+
+        cursor.execute("""
+        SELECT montant
+        FROM jackpot_global
+        WHERE id=1
+        """)
+
+        jackpot = cursor.fetchone()[0]
+
+        nouveaux_coins += jackpot
+
+        cursor.execute("""
+        UPDATE jackpot_global
+        SET montant=0
+        WHERE id=1
+        """)
+
+        jackpot_message = f"""
+
+🎰 JACKPOT MONDIAL !
+
+💰 Gain : {jackpot} Coins
+
+📜 "À ce stade, tu nous as tous détrônés."
+
+— Seito Kaiba & TeRomik
+"""
 
     cursor.execute("""
     UPDATE joueurs
@@ -979,36 +1033,11 @@ if not joueur:
         nouveaux_coins,
         user_id
     ))
-if random.randint(1, 5000) == 1:
 
-    cursor.execute("""
-    SELECT montant
-    FROM jackpot_global
-    WHERE id=1
-    """)
-
-    jackpot = cursor.fetchone()[0]
-
-    nouveaux_coins += jackpot
-
-    cursor.execute("""
-    UPDATE jackpot_global
-    SET montant=0
-    WHERE id=1
-    """)
-
-    jackpot_message = f"""
-🎰 JACKPOT MONDIAL !
-
-💰 Gain : {jackpot} Coins
-
-📜 "À ce stade, tu nous as tous détrônés."
-
-— Seito Kaiba & TeRomik
-"""
     conn.commit()
+
     await interaction.response.send_message(
-    f"""
+        f"""
 🎲 Roulette TeRom-Brawl
 
 👤 {interaction.user.mention}
@@ -1020,8 +1049,10 @@ if random.randint(1, 5000) == 1:
 🪙 Variation : {gain:+}
 
 💼 Nouveau solde : {nouveaux_coins}
+
+{jackpot_message}
 """
-)
+    )
 @bot.tree.command(
     name="shop",
     description="Voir la boutique TeRom-Brawl"
