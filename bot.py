@@ -972,7 +972,7 @@ if mise > coins:
 
 roll = random.randint(1, 100)
 
-    if roll <= 50:
+if roll <= 50:
         gain = -mise
         resultat = "💥 PERDU"
 
