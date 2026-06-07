@@ -288,16 +288,27 @@ async def resultat(
     defaites_adv = adversaire_db[4]
     serie_adv = adversaire_db[5]
 
-    if resultat.value == "victoire":
+if resultat.value == "victoire":
 
-        points_joueur += gain
-        victoires_joueur += 1
-        serie_joueur += 1
-        streak_max_joueur = joueur[6]
+    points_joueur += gain
+    victoires_joueur += 1
+    serie_joueur += 1
 
-if serie_joueur > streak_max_joueur:
-    streak_max_joueur = serie_joueur
+    streak_max_joueur = joueur[6]
 
+    if serie_joueur > streak_max_joueur:
+        streak_max_joueur = serie_joueur
+
+    points_adv -= perte
+
+    if points_adv < 0:
+        points_adv = 0
+
+    defaites_adv += 1
+    serie_adv = 0
+
+    gagnant = interaction.user.mention
+    perdant = adversaire.mention
         points_adv -= perte
 
         if points_adv < 0:
