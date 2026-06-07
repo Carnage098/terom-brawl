@@ -629,7 +629,7 @@ if points_joueur >= 100000:
     conn.commit()
 titres_debloques.append("⚔️ Centurion")
 
-    jackpot_message = ""
+jackpot_message = ""
 
     if coins_gagnes_joueur == 1000:
         jackpot_message += "\n🎰 JACKPOT DU JOUEUR ! +1000 Coins"
