@@ -5,7 +5,7 @@ import random
 from discord.ext import commands
 from discord import app_commands
 pending_matches = {}
-class ValidationView(discord.ui.View):
+
 TOKEN = os.getenv("DISCORD_TOKEN")
 
 intents = discord.Intents.default()
