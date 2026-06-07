@@ -1993,4 +1993,59 @@ async def refuser(interaction: discord.Interaction):
         "❌ Défi refusé."
     )
 
+@bot.tree.command(
+    name="records",
+    description="Voir les records de TeRom-Brawl"
+)
+async def records(interaction: discord.Interaction):
+
+    cursor.execute("""
+    SELECT pseudo, points
+    FROM joueurs
+    ORDER BY points DESC
+    LIMIT 1
+    """)
+    roi_points = cursor.fetchone()
+
+    cursor.execute("""
+    SELECT pseudo, victoires
+    FROM joueurs
+    ORDER BY victoires DESC
+    LIMIT 1
+    """)
+    roi_victoires = cursor.fetchone()
+
+    cursor.execute("""
+    SELECT pseudo, streak_max
+    FROM joueurs
+    ORDER BY streak_max DESC
+    LIMIT 1
+    """)
+    roi_serie = cursor.fetchone()
+
+    cursor.execute("""
+    SELECT pseudo, teromik_coins
+    FROM joueurs
+    ORDER BY teromik_coins DESC
+    LIMIT 1
+    """)
+    roi_coins = cursor.fetchone()
+
+    await interaction.response.send_message(
+        f"""
+🏆 **Records de TeRom-Brawl**
+
+👑 Plus de points
+{roi_points[0]} — {roi_points[1]} points
+
+⚔️ Plus de victoires
+{roi_victoires[0]} — {roi_victoires[1]} victoires
+
+🔥 Plus longue série
+{roi_serie[0]} — {roi_serie[1]} victoires consécutives
+
+💰 Plus grande fortune
+{roi_coins[0]} — {roi_coins[1]} Coins
+"""
+    )
 bot.run(TOKEN)
