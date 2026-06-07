@@ -92,12 +92,7 @@ CREATE TABLE IF NOT EXISTS inventaire (
 )
 """)
 
-cursor.execute("""
-CREATE TABLE IF NOT EXISTS titres (
-    user_id TEXT PRIMARY KEY,
-    titre TEXT
-)
-""") 
+
 cursor.execute("""
 CREATE TABLE IF NOT EXISTS titres (
     user_id TEXT PRIMARY KEY,
