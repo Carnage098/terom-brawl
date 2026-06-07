@@ -133,6 +133,12 @@ try:
     """)
 except:
     pass
+cursor.execute("""
+CREATE TABLE IF NOT EXISTS investissements (
+    user_id TEXT PRIMARY KEY,
+    montant INTEGER DEFAULT 0
+)
+""")
 conn.commit()
 def get_grade(points):
 
