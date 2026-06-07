@@ -215,27 +215,27 @@ async def profil(interaction: discord.Interaction):
         )
         return
 
-points = joueur[2]
-victoires = joueur[3]
-defaites = joueur[4]
-serie = joueur[5]
-coins = joueur[8]
-meilleure_serie = joueur[6]
-grade = get_grade(points)
+    points = joueur[2]
+    victoires = joueur[3]
+    defaites = joueur[4]
+    serie = joueur[5]
+    coins = joueur[8]
+    meilleure_serie = joueur[6]
+    grade = get_grade(points)
 
-cursor.execute("""
-SELECT objet
-FROM inventaire
-WHERE user_id=?
-AND objet='🏆 Terrorageux All Time'
-""", (user_id,))
+    cursor.execute("""
+    SELECT objet
+    FROM inventaire
+    WHERE user_id=?
+    AND objet='🏆 Terrorageux All Time'
+    """, (user_id,))
 
-trophee = cursor.fetchone()
+    trophee = cursor.fetchone()
 
-if trophee:
-    ligne_trophee = "\n🏆 Terrorageux All Time\n"
-else:
-    ligne_trophee = ""
+    if trophee:
+        ligne_trophee = "\n🏆 Terrorageux All Time\n"
+    else:
+        ligne_trophee = ""
 
     cursor.execute("""
     SELECT titre
