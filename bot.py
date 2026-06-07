@@ -924,7 +924,7 @@ SET montant=?
 WHERE id=1
 """, (jackpot,))
 
-    if not joueur:
+if not joueur:
         await interaction.response.send_message(
             "❌ Tu n'es pas inscrit.",
             ephemeral=True
