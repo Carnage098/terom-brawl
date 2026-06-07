@@ -309,8 +309,8 @@ if not adversaire_db:
         )
         return
 
-    gain = random.randint(10, 100)
-    perte = random.randint(1, 50)
+gain = random.randint(10, 100)
+perte = random.randint(1, 50)
 
     def generer_coins():
         roll = random.randint(1, 100)
