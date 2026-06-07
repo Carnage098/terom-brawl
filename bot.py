@@ -1695,4 +1695,27 @@ async def legendes(interaction: discord.Interaction):
 {roi_coins[0]} — {roi_coins[1]} Coins
 """
     )
+@bot.tree.command(
+    name="jackpot",
+    description="Voir le Jackpot Mondial"
+)
+async def jackpot(interaction: discord.Interaction):
+
+    cursor.execute("""
+    SELECT montant
+    FROM jackpot_global
+    WHERE id=1
+    """)
+
+    montant = cursor.fetchone()[0]
+
+    await interaction.response.send_message(
+        f"""
+🎰 Jackpot Mondial
+
+💰 Montant actuel :
+{montant} Coins
+"""
+    )
+
 bot.run(TOKEN)
