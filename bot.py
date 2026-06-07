@@ -295,8 +295,6 @@ if resultat.value == "victoire":
     victoires_joueur += 1
     serie_joueur += 1
 
-    streak_max_joueur = joueur[6]
-
     if serie_joueur > streak_max_joueur:
         streak_max_joueur = serie_joueur
 
@@ -310,36 +308,27 @@ if resultat.value == "victoire":
 
     gagnant = interaction.user.mention
     perdant = adversaire.mention
-        points_adv -= perte
 
-        if points_adv < 0:
-            points_adv = 0
+else:
 
-        defaites_adv += 1
-        serie_adv = 0
+    points_joueur -= perte
 
-        gagnant = interaction.user.mention
-        perdant = adversaire.mention
+    if points_joueur < 0:
+        points_joueur = 0
 
-    else:
+    defaites_joueur += 1
+    serie_joueur = 0
 
-        points_joueur -= perte
+    points_adv += gain
+    victoires_adv += 1
+    serie_adv += 1
 
-        if points_joueur < 0:
-            points_joueur = 0
+    gagnant = adversaire.mention
+    perdant = interaction.user.mention
 
-        defaites_joueur += 1
-        serie_joueur = 0
+grade_joueur = get_grade(points_joueur)
+grade_adv = get_grade(points_adv)
 
-        points_adv += gain
-        victoires_adv += 1
-        serie_adv += 1
-
-        gagnant = adversaire.mention
-        perdant = interaction.user.mention
-
-    grade_joueur = get_grade(points_joueur)
-    grade_adv = get_grade(points_adv)
 
     cursor.execute("""
     UPDATE joueurs
