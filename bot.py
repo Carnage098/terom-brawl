@@ -1131,7 +1131,7 @@ jackpot_message += """
 "Les probabilités se sont inclinées devant toi."
 """
 
-    cursor.execute("""
+cursor.execute("""
     UPDATE joueurs
     SET teromik_coins=?
     WHERE user_id=?
