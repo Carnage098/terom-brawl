@@ -1170,8 +1170,7 @@ if objet == "booster_teromik":
 💰 Coins restants : {coins}
 """
         )
-
-        return
+    return
 
     # TITRES ET TROPHÉE
 
