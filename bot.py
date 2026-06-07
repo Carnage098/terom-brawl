@@ -902,9 +902,12 @@ async def roulette(
     user_id = str(interaction.user.id)
 
     cursor.execute(
-        "SELECT * FROM joueurs WHERE user_id=?",
-        (user_id,)
-    )
+    "SELECT * FROM joueurs WHERE user_id=?",
+    (user_id,)
+)
+
+joueur = cursor.fetchone()
+
 cursor.execute("""
 SELECT montant
 FROM jackpot_global
@@ -920,7 +923,6 @@ UPDATE jackpot_global
 SET montant=?
 WHERE id=1
 """, (jackpot,))
-    joueur = cursor.fetchone()
 
     if not joueur:
         await interaction.response.send_message(
