@@ -295,12 +295,15 @@ async def resultat(
         )
         return
 
-    cursor.execute(
-        "SELECT * FROM joueurs WHERE user_id=?",
-        (str(adversaire.id),)
-    )
+    user_id = str(interaction.user.id)
+pseudo = interaction.user.name
 
-    adversaire_db = cursor.fetchone()
+cursor.execute(
+    "SELECT * FROM joueurs WHERE user_id=?",
+    (user_id,)
+)
+
+joueur = cursor.fetchone()
 
     if not adversaire_db:
         await interaction.response.send_message(
