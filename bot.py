@@ -162,9 +162,9 @@ async def inscription(interaction: discord.Interaction):
         )
     )
 
+   
     conn.commit()
-
-await interaction.followup.send(
+    await interaction.followup.send(
     f"⚔️ Bienvenue sur TeRom-Brawl !\n\n"
     f"👤 Joueur : {pseudo}\n\n"
     f"🎖️ Grade : Recrue\n"
@@ -293,22 +293,19 @@ async def resultat(
         )
         return
 
-    user_id = str(interaction.user.id)
-pseudo = interaction.user.name
-
-cursor.execute(
+   cursor.execute(
     "SELECT * FROM joueurs WHERE user_id=?",
-    (user_id,)
+    (str(adversaire.id),)
 )
 
-joueur = cursor.fetchone()
+adversaire_db = cursor.fetchone()
 
-    if not adversaire_db:
-        await interaction.response.send_message(
-            "❌ Cet adversaire n'est pas inscrit.",
-            ephemeral=True
-        )
-        return
+if not adversaire_db:
+    await interaction.response.send_message(
+        "❌ Cet adversaire n'est pas inscrit.",
+        ephemeral=True
+    )
+    return
 
     gain = random.randint(10, 100)
     perte = random.randint(1, 50)
