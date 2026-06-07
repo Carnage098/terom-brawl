@@ -486,7 +486,22 @@ async def resultat(
         resultat.value,
         gain if resultat.value == "victoire" else -perte
     ))
-
+cursor.execute("""
+INSERT INTO historique_duels (
+    joueur1,
+    joueur2,
+    resultat,
+    plateforme,
+    date
+)
+VALUES (?, ?, ?, ?, ?)
+""", (
+    interaction.user.display_name,
+    adversaire.display_name,
+    resultat,
+    plateforme,
+    datetime.now().strftime("%d/%m/%Y %H:%M")
+))
     conn.commit()
 
     jackpot_message = ""
