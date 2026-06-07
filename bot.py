@@ -1222,7 +1222,7 @@ async def inventaire(interaction: discord.Interaction):
     titre: str
 ):
 
-    user_id = str(interaction.user.id)
+user_id = str(interaction.user.id)
 
     cursor.execute("""
     SELECT objet
