@@ -166,7 +166,7 @@ async def inscription(interaction: discord.Interaction):
         )
         return
 
-       cursor.execute(
+    cursor.execute(
         """
         INSERT INTO joueurs (
             user_id,
