@@ -2385,10 +2385,7 @@ async def investir(
         montant
     )
     VALUES (?, 0)
-    """, (
-        user_id,
-        0
-    ))
+    """, (user_id,))
 
     cursor.execute("""
     UPDATE investissements
@@ -2407,22 +2404,24 @@ async def investir(
         coins - montant,
         user_id
     ))
-if random.randint(1, 10000) == 1:
 
-    cursor.execute("""
-    UPDATE investissements
-    SET montant = CAST(montant * 1.50 AS INTEGER)
-    """)
+    if random.randint(1, 10000) == 1:
 
-    await interaction.channel.send(
-        """
+        cursor.execute("""
+        UPDATE investissements
+        SET montant = CAST(montant * 1.50 AS INTEGER)
+        """)
+
+        await interaction.channel.send(
+            """
 🚀 BOOM ÉCONOMIQUE MONDIAL
 
 📈 Tous les investissements gagnent +50 %
 
 💰 Les marchés sont en euphorie !
 """
-    )
+        )
+
     conn.commit()
 
     await interaction.response.send_message(
@@ -2492,7 +2491,7 @@ async def recuperer_investissement(
         multiplicateur = 0.50
         evenement = "⚠️ Krach financier (-50%)"
 
-        else:
+    else:
 
         cursor.execute("""
         UPDATE investissements
@@ -2518,14 +2517,12 @@ async def recuperer_investissement(
             "💼 Survivant du Krach"
         ))
 
-        conn.commit()
-
         multiplicateur = 0.10
 
         evenement = """
 🌍 CRISE ÉCONOMIQUE MONDIALE
 
-📉 Tous les investissements du serveur perdent 20%
+📉 Tous les investissements du serveur perdent 20 %
 
 🏆 TITRE SECRET DÉBLOQUÉ
 
@@ -2533,6 +2530,9 @@ async def recuperer_investissement(
 
 💥 Les marchés se sont effondrés.
 """
+
+    gain_final = int(montant * multiplicateur)
+
 @bot.tree.command(
     name="marche",
     description="Voir l'état du marché financier"
