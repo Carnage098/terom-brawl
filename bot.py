@@ -165,19 +165,14 @@ async def inscription(interaction: discord.Interaction):
 
     conn.commit()
 
-    await interaction.followup.send(
-        f"""
-⚔️ Bienvenue sur TeRom-Brawl !
-
-👤 Joueur : {pseudo}
-
-🎖️ Grade : Recrue
-📈 Points : 0
-
-Bonne chance dans l'arène !
-""",
-        ephemeral=True
-    )
+await interaction.followup.send(
+    f"⚔️ Bienvenue sur TeRom-Brawl !\n\n"
+    f"👤 Joueur : {pseudo}\n\n"
+    f"🎖️ Grade : Recrue\n"
+    f"📈 Points : 0\n\n"
+    f"Bonne chance dans l'arène !",
+    ephemeral=True
+)
 
 @bot.tree.command(
     name="profil",
