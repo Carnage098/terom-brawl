@@ -1160,7 +1160,7 @@ if objet == "booster_teromik":
     )
 
     return
-        conn.commit()
+    conn.commit()
 
         await interaction.response.send_message(
             f"""
