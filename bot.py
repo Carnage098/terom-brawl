@@ -971,6 +971,7 @@ async def shop(interaction: discord.Interaction):
 🏆 Terrorageux All Time — 100000 Coins
 """
     )
+```python
 @bot.tree.command(
     name="acheter",
     description="Acheter un objet de la boutique"
@@ -1001,7 +1002,7 @@ async def acheter(
     prix = {
         "booster_points": 2000,
         "booster_victoires": 10000,
-        "booster_teromik" : 15000, 
+        "booster_teromik": 15000,
         "teromik_fan": 5000,
         "terochasseur": 10000,
         "maitre_tero": 25000,
@@ -1035,16 +1036,12 @@ async def acheter(
 
         if roll <= 50:
             gain = random.randint(100, 500)
-
         elif roll <= 80:
             gain = random.randint(501, 2000)
-
         elif roll <= 95:
             gain = random.randint(2001, 5000)
-
         elif roll <= 99:
             gain = random.randint(5001, 8000)
-
         else:
             gain = random.randint(8001, 10000)
 
@@ -1068,9 +1065,9 @@ async def acheter(
         if gain >= 8000:
 
             citations = [
-                '📜 "C\'est impossible ! Personne n\'a pu gagner autant de points !" \n— Seito Kaiba\n\n💼 Woah ! Avec ça, tu peux acheter la Kaiba Corp !',
-                '📜 "Grand frère ! Quelqu\'un vient de gagner une quantité absurde de points !" \n— Mokuba Kaiba',
-                '📜 "Même Slifer le Dragon Céleste, le Dragon Ailé de Râ et Obélisk le Tourmenteur n\'avaient pas prévu cela !" \n— Marik Ishtar',
+                '📜 "C\'est impossible ! Personne n\'a pu gagner autant de points !"\n— Seito Kaiba\n\n💼 Woah ! Avec ça, tu peux acheter la Kaiba Corp !',
+                '📜 "Grand frère ! Quelqu\'un vient de gagner une quantité absurde de points !"\n— Mokuba Kaiba',
+                '📜 "Même Slifer le Dragon Céleste, le Dragon Ailé de Râ et Obélisk le Tourmenteur n\'avaient pas prévu cela !"\n— Marik Ishtar',
                 '📜 "ERREUR SYSTÈME : cette récompense dépasse les limites autorisées."\n— Kaiba Corp',
                 '📜 "ERREUR SYSTÈME : les comptables de la Kaiba Corp ont demandé un arrêt immédiat de cette distribution."\n— Kaiba Corp'
             ]
@@ -1079,7 +1076,19 @@ async def acheter(
 
         elif gain >= 5000:
 
-                 conn.commit()
+            citation = (
+                '📜 "Même les dimensions tremblent devant une telle récompense."\n'
+                '— Tero-Seigneur des Dimensions'
+            )
+
+        elif gain >= 2000:
+
+            citation = (
+                '📜 "Voilà un exploit qui mérite le respect."\n'
+                '— Jack Atlas'
+            )
+
+        conn.commit()
 
         await interaction.response.send_message(
             f"""
@@ -1099,56 +1108,76 @@ async def acheter(
     if objet == "booster_victoires":
 
         nouvelles_victoires = joueur[3] + 50
+        nouveaux_points = joueur[2] + 1000
+        nouveau_grade = get_grade(nouveaux_points)
 
         cursor.execute("""
         UPDATE joueurs
         SET victoires=?,
+            points=?,
+            grade=?,
             teromik_coins=?
         WHERE user_id=?
         """, (
             nouvelles_victoires,
+            nouveaux_points,
+            nouveau_grade,
             coins,
             user_id
         ))
-# BOOSTER SIGNÉ PAR TEROMIK
-if objet == "booster_teromik":
 
-    nouvelles_victoires = joueur[3] + 50
-    nouveaux_points = joueur[2] + 25000
+        conn.commit()
 
-    nouveau_grade = get_grade(nouveaux_points)
+        await interaction.response.send_message(
+            f"""
+⚔️ Booster utilisé !
 
-    citations = [
-        "📜 \"Une seule signature peut changer le cours du temps.\"\n— TeRomik",
-        "📜 \"La Duel Academy te remercie pour cet achat !\"\n— TeRomik",
-        "📜 \"Je signerai n'importe lequel de vos boosters, du moment qu'il ne vous envoie pas dans le Royaume des Ombres.\"\n— TeRomik"
-    ]
+🏆 +50 Victoires
+📈 +1000 Points
 
-    citation = random.choice(citations)
+💰 Coins restants : {coins}
+"""
+        )
 
-    cursor.execute("""
-    UPDATE joueurs
-    SET victoires=?,
-        points=?,
-        grade=?,
-        teromik_coins=?
-    WHERE user_id=?
-    """, (
-        nouvelles_victoires,
-        nouveaux_points,
-        nouveau_grade,
-        coins,
-        user_id
-    ))
+        return
 
-    conn.commit()
+    # BOOSTER SIGNÉ PAR TEROMIK
+    if objet == "booster_teromik":
 
-    await interaction.response.send_message(
-        f"""
+        nouvelles_victoires = joueur[3] + 50
+        nouveaux_points = joueur[2] + 25000
+        nouveau_grade = get_grade(nouveaux_points)
+
+        citations = [
+            "📜 \"Une seule signature peut changer le cours du temps.\"\n— TeRomik",
+            "📜 \"La Duel Academy te remercie pour cet achat !\"\n— TeRomik",
+            "📜 \"Je signerai n'importe lequel de vos boosters, du moment qu'il ne vous envoie pas dans le Royaume des Ombres.\"\n— TeRomik"
+        ]
+
+        citation = random.choice(citations)
+
+        cursor.execute("""
+        UPDATE joueurs
+        SET victoires=?,
+            points=?,
+            grade=?,
+            teromik_coins=?
+        WHERE user_id=?
+        """, (
+            nouvelles_victoires,
+            nouveaux_points,
+            nouveau_grade,
+            coins,
+            user_id
+        ))
+
+        conn.commit()
+
+        await interaction.response.send_message(
+            f"""
 ✍️ Booster Signé par TeRomik utilisé !
 
 🏆 +50 Victoires
-
 📈 +25 000 Points
 
 🎖️ Nouveau grade : {nouveau_grade}
@@ -1157,25 +1186,13 @@ if objet == "booster_teromik":
 
 💰 Coins restants : {coins}
 """
-    )
+        )
 
-    return
-        conn.commit()
+        return
 
-    await interaction.response.send_message(
-        f"""
-⚔️ Booster utilisé !
+    # TITRES ET TROPHÉES
 
-🏆 +50 victoires
-
-💰 Coins restants : {coins}
-"""
-    )
-
-    return
-    # TITRES ET TROPHÉE
-
-noms = {
+    noms = {
         "teromik_fan": "❤️ TeRomik Fan",
         "terochasseur": "⚔️ Terochasseur de Duels",
         "maitre_tero": "🔥 Maître Tero",
@@ -1184,7 +1201,7 @@ noms = {
         "terrorageux_all_time": "🏆 Terrorageux All Time"
     }
 
-cursor.execute("""
+    cursor.execute("""
     INSERT INTO inventaire (
         user_id,
         objet
@@ -1195,7 +1212,7 @@ cursor.execute("""
         noms[objet]
     ))
 
-cursor.execute("""
+    cursor.execute("""
     UPDATE joueurs
     SET teromik_coins=?
     WHERE user_id=?
@@ -1203,8 +1220,10 @@ cursor.execute("""
         coins,
         user_id
     ))
-conn.commit()
-await interaction.response.send_message(
+
+    conn.commit()
+
+    await interaction.response.send_message(
         f"""
 ✅ Achat effectué !
 
@@ -1215,38 +1234,8 @@ Objet obtenu :
 💰 Coins restants : {coins}
 """
     )
-@bot.tree.command(
-    name="inventaire",
-    description="Voir ton inventaire"
-)
-async def inventaire(interaction: discord.Interaction):
+```
 
-    user_id = str(interaction.user.id)
-
-    cursor.execute("""
-    SELECT objet
-    FROM inventaire
-    WHERE user_id=?
-    """, (user_id,))
-
-    objets = cursor.fetchall()
-
-    if not objets:
-        await interaction.response.send_message(
-            "🎒 Ton inventaire est vide.",
-            ephemeral=True
-        )
-        return
-
-    message = "🎒 **Inventaire TeRom-Brawl**\n\n"
-
-    for objet in objets:
-        message += f"• {objet[0]}\n"
-
-    await interaction.response.send_message(
-        message,
-        ephemeral=True
-    )
 @bot.tree.command(
     name="equiper",
     description="Équiper un titre"
