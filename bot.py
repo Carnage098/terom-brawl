@@ -1001,6 +1001,7 @@ async def acheter(
     prix = {
         "booster_points": 2000,
         "booster_victoires": 10000,
+        "booster_teromik" : 15000, 
         "teromik_fan": 5000,
         "terochasseur": 10000,
         "maitre_tero": 25000,
@@ -1109,7 +1110,56 @@ async def acheter(
             coins,
             user_id
         ))
+# BOOSTER SIGNÉ PAR TEROMIK
+if objet == "booster_teromik":
 
+    nouvelles_victoires = joueur[3] + 50
+    nouveaux_points = joueur[2] + 25000
+
+    nouveau_grade = get_grade(nouveaux_points)
+
+    citations = [
+        "📜 \"Une seule signature peut changer le cours du temps.\"\n— TeRomik",
+        "📜 \"La Duel Academy te remercie pour cet achat !\"\n— TeRomik",
+        "📜 \"Je signerai n'importe lequel de vos boosters, du moment qu'il ne vous envoie pas dans le Royaume des Ombres.\"\n— TeRomik"
+    ]
+
+    citation = random.choice(citations)
+
+    cursor.execute("""
+    UPDATE joueurs
+    SET victoires=?,
+        points=?,
+        grade=?,
+        teromik_coins=?
+    WHERE user_id=?
+    """, (
+        nouvelles_victoires,
+        nouveaux_points,
+        nouveau_grade,
+        coins,
+        user_id
+    ))
+
+    conn.commit()
+
+    await interaction.response.send_message(
+        f"""
+✍️ Booster Signé par TeRomik utilisé !
+
+🏆 +50 Victoires
+
+📈 +25 000 Points
+
+🎖️ Nouveau grade : {nouveau_grade}
+
+{citation}
+
+💰 Coins restants : {coins}
+"""
+    )
+
+    return
         conn.commit()
 
         await interaction.response.send_message(
