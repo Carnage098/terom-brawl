@@ -104,6 +104,21 @@ CREATE TABLE IF NOT EXISTS titres (
     titre TEXT
 )
 """)
+cursor.execute("""
+CREATE TABLE IF NOT EXISTS jackpot_global (
+    id INTEGER PRIMARY KEY,
+    montant INTEGER DEFAULT 0
+)
+""")
+
+cursor.execute("""
+INSERT OR IGNORE INTO jackpot_global (
+    id,
+    montant
+)
+VALUES (1, 0)
+""")
+
 conn.commit()
 def get_grade(points):
 
