@@ -938,7 +938,7 @@ async def roulette(
         )
         return
 
-    # Alimente le jackpot mondial
+
     cursor.execute("""
     SELECT montant
     FROM jackpot_global
@@ -980,7 +980,24 @@ async def roulette(
     nouveaux_coins = coins + gain
 
     jackpot_message = ""
-
+cursor.execute("""
+INSERT INTO inventaire (
+    user_id,
+    objet
+)
+SELECT ?, ?
+WHERE NOT EXISTS (
+    SELECT 1
+    FROM inventaire
+    WHERE user_id=?
+    AND objet=?
+)
+""", (
+    user_id,
+    "🎰 Béni du Jackpot",
+    user_id,
+    "🎰 Béni du Jackpot"
+))
     if random.randint(1, 5000) == 1:
 
         cursor.execute("""
@@ -999,15 +1016,13 @@ async def roulette(
         WHERE id=1
         """)
 
-        jackpot_message = f"""
+       jackpot_message += """
 
-🎰 JACKPOT MONDIAL !
+🏆 TITRE SECRET DÉBLOQUÉ
 
-💰 Gain : {jackpot} Coins
+🎰 Béni du Jackpot
 
-📜 "À ce stade, tu nous as tous détrônés."
-
-— Seito Kaiba & TeRomik
+"Les probabilités se sont inclinées devant toi."
 """
 
     cursor.execute("""
