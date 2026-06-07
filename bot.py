@@ -1172,7 +1172,7 @@ return
 
     # TITRES ET TROPHÉE
 
-    noms = {
+noms = {
         "teromik_fan": "❤️ TeRomik Fan",
         "terochasseur": "⚔️ Terochasseur de Duels",
         "maitre_tero": "🔥 Maître Tero",
