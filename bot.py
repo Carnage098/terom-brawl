@@ -4,7 +4,8 @@ import discord
 import random
 from discord.ext import commands
 from discord import app_commands
-
+pending_matches = {}
+class ValidationView(discord.ui.View):
 TOKEN = os.getenv("DISCORD_TOKEN")
 
 intents = discord.Intents.default()
@@ -180,7 +181,13 @@ async def profil(interaction: discord.Interaction):
     grade = get_grade(points)
     victoires = joueur[3]
 defaites = joueur[4]
+   cursor.execute("""
+SELECT COUNT(*) + 1
+FROM joueurs
+WHERE points > ?
+""", (points,))
 
+rang = cursor.fetchone()[0]
 total = victoires + defaites
 
 if total > 0:
@@ -191,15 +198,15 @@ else:
 
     await interaction.response.send_message(
     f"""
-await interaction.response.send_message(
-    f"""
 👤 **{joueur[1]}**
+
+🏆 Rang : #{rang}
 
 🎖️ Grade : {grade}
 📈 Points : {points}
 
-✅ Victoires : {joueur[3]}
-❌ Défaites : {joueur[4]}
+✅ Victoires : {victoires}
+❌ Défaites : {defaites}
 
 📊 Ratio : {ratio}%
 
@@ -209,6 +216,7 @@ await interaction.response.send_message(
 """,
     ephemeral=True
 )
+    
         
 # ==========================
 # LANCEMENT
@@ -450,5 +458,162 @@ async def classement(interaction: discord.Interaction):
         )
 
     await interaction.response.send_message(message)
+@bot.tree.command(
+    name="stats",
+    description="Voir les statistiques globales de TeRom-Brawl"
+)
+async def stats(interaction: discord.Interaction):
 
+    # Nombre de joueurs
+    cursor.execute("SELECT COUNT(*) FROM joueurs")
+    nb_joueurs = cursor.fetchone()[0]
+
+    # Nombre de matchs
+    cursor.execute("SELECT COUNT(*) FROM matchs")
+    nb_matchs = cursor.fetchone()[0]
+
+    # Leader
+    cursor.execute("""
+    SELECT pseudo, points
+    FROM joueurs
+    ORDER BY points DESC
+    LIMIT 1
+    """)
+
+    leader = cursor.fetchone()
+
+    if leader:
+        leader_nom = leader[0]
+        leader_points = leader[1]
+    else:
+        leader_nom = "Aucun"
+        leader_points = 0
+
+    await interaction.response.send_message(
+        f"""
+📊 **Statistiques TeRom-Brawl**
+
+👥 Joueurs inscrits : **{nb_joueurs}**
+⚔️ Matchs enregistrés : **{nb_matchs}**
+
+👑 Leader actuel : **{leader_nom}**
+📈 Points : **{leader_points}**
+"""
+    )
+@bot.tree.command(
+    name="historique",
+    description="Voir les 10 derniers duels enregistrés"
+)
+async def historique(interaction: discord.Interaction):
+
+    cursor.execute("""
+    SELECT joueur_id,
+           adversaire_id,
+           plateforme,
+           resultat,
+           date
+    FROM matchs
+    ORDER BY id DESC
+    LIMIT 10
+    """)
+
+    matchs = cursor.fetchall()
+
+    if not matchs:
+        await interaction.response.send_message(
+            "❌ Aucun duel enregistré."
+        )
+        return
+
+    message = "⚔️ **10 derniers duels**\n\n"
+
+    for match in matchs:
+
+        joueur = bot.get_user(int(match[0]))
+        adversaire = bot.get_user(int(match[1]))
+
+        joueur_nom = joueur.name if joueur else "Inconnu"
+        adversaire_nom = adversaire.name if adversaire else "Inconnu"
+
+        resultat = "🏆 Victoire" if match[3] == "victoire" else "💀 Défaite"
+
+        plateformes = {
+            "omega": "YGO Omega",
+            "duelingbook": "Dueling Book",
+            "edopro": "EDOPro",
+            "masterduel": "Master Duel",
+            "remote": "Remote Duel"
+        }
+
+        plateforme = plateformes.get(match[2], match[2])
+
+        message += (
+            f"{resultat}\n"
+            f"👤 {joueur_nom} vs {adversaire_nom}\n"
+            f"🎮 {plateforme}\n\n"
+        )
+
+    await interaction.response.send_message(message)
+@bot.tree.command(
+    name="fiche",
+    description="Consulter la fiche d'un joueur"
+)
+async def fiche(
+    interaction: discord.Interaction,
+    joueur: discord.Member
+):
+
+    cursor.execute(
+        "SELECT * FROM joueurs WHERE user_id=?",
+        (str(joueur.id),)
+    )
+
+    data = cursor.fetchone()
+
+    if not data:
+        await interaction.response.send_message(
+            "❌ Ce joueur n'est pas inscrit à TeRom-Brawl."
+        )
+        return
+
+    points = data[2]
+    grade = get_grade(points)
+
+    victoires = data[3]
+    defaites = data[4]
+
+    total = victoires + defaites
+
+    if total > 0:
+        ratio = round((victoires / total) * 100)
+    else:
+        ratio = 0
+
+    cursor.execute("""
+    SELECT COUNT(*) + 1
+    FROM joueurs
+    WHERE points > ?
+    """, (points,))
+
+    rang = cursor.fetchone()[0]
+
+    await interaction.response.send_message(
+        f"""
+👤 **{joueur.display_name}**
+
+🏆 Rang : #{rang}
+
+🎖️ Grade : {grade}
+📈 Points : {points}
+
+✅ Victoires : {victoires}
+❌ Défaites : {defaites}
+
+📊 Ratio : {ratio}%
+
+🔥 Série : {data[5]}
+
+🪙 TeRomik Coins : {data[7]}
+"""
+    )
 bot.run(TOKEN)
