@@ -628,15 +628,15 @@ if points_joueur >= 100000:
     ))
     conn.commit()
 
-    jackpot_message = ""
+        jackpot_message = ""
 
-    if coins_gagnes_joueur == 1000:
+        if coins_gagnes_joueur == 1000:
         jackpot_message += "\n🎰 JACKPOT DU JOUEUR ! +1000 Coins"
 
-    if coins_gagnes_adv == 1000:
-        jackpot_message += "\n🎰 JACKPOT DE L'ADVERSAIRE ! +1000 Coins"
+        if coins_gagnes_adv == 1000:
+            jackpot_message += "\n🎰 JACKPOT DE L'ADVERSAIRE ! +1000 Coins"
 
-    await interaction.response.send_message(
+        await interaction.response.send_message(
         f"⚔️ Duel enregistré\n\n"
         f"🏆 Gagnant : {gagnant}\n"
         f"📈 Gain : +{gain} points\n\n"
