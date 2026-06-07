@@ -310,12 +310,13 @@ async def resultat(
     defaites_joueur = joueur[4]
     serie_joueur = joueur[5]
     streak_max_joueur = joueur[6]
+    coins_joueur = joueur[8]
 
     points_adv = adversaire_db[2]
     victoires_adv = adversaire_db[3]
     defaites_adv = adversaire_db[4]
     serie_adv = adversaire_db[5]
-
+    
     if resultat.value == "victoire":
 
         points_joueur += gain
@@ -409,6 +410,25 @@ async def resultat(
         gain if resultat.value == "victoire" else -perte
     ))
 
+gain = random.randint(10, 100)
+perte = random.randint(1, 50)
+roll = random.randint(1, 100)
+
+if roll <= 50:
+    coins_gagnes = random.randint(50, 150)
+
+elif roll <= 80:
+    coins_gagnes = random.randint(151, 300)
+
+elif roll <= 95:
+    coins_gagnes = random.randint(301, 600)
+
+elif roll <= 99:
+    coins_gagnes = random.randint(601, 900)
+
+else:
+    coins_gagnes = 1000
+    
     conn.commit()
 
     await interaction.response.send_message(
