@@ -1104,7 +1104,7 @@ async def acheter(
 """
 )
 
-return
+    return
 
     # BOOSTER VICTOIRES
 if objet == "booster_victoires":
