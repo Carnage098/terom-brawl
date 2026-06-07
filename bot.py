@@ -1580,5 +1580,64 @@ async def face_a_face(
 
     await interaction.response.send_message(message)
 
-    
+
+@bot.tree.command(
+    name="legendes",
+    description="Voir les légendes de TeRom-Brawl"
+)
+async def legendes(interaction: discord.Interaction):
+
+    # Plus de points
+    cursor.execute("""
+    SELECT pseudo, points
+    FROM joueurs
+    ORDER BY points DESC
+    LIMIT 1
+    """)
+    roi_points = cursor.fetchone()
+
+    # Plus de victoires
+    cursor.execute("""
+    SELECT pseudo, victoires
+    FROM joueurs
+    ORDER BY victoires DESC
+    LIMIT 1
+    """)
+    roi_victoires = cursor.fetchone()
+
+    # Plus grosse série
+    cursor.execute("""
+    SELECT pseudo, streak_max
+    FROM joueurs
+    ORDER BY streak_max DESC
+    LIMIT 1
+    """)
+    roi_serie = cursor.fetchone()
+
+    # Plus riche
+    cursor.execute("""
+    SELECT pseudo, teromik_coins
+    FROM joueurs
+    ORDER BY teromik_coins DESC
+    LIMIT 1
+    """)
+    roi_coins = cursor.fetchone()
+
+    await interaction.response.send_message(
+        f"""
+🏆 **Légendes de TeRom-Brawl**
+
+👑 Roi des Points
+{roi_points[0]} — {roi_points[1]} points
+
+⚔️ Maître des Victoires
+{roi_victoires[0]} — {roi_victoires[1]} victoires
+
+🔥 Seigneur des Séries
+{roi_serie[0]} — {roi_serie[1]} victoires consécutives
+
+💰 Magnat des Coins
+{roi_coins[0]} — {roi_coins[1]} Coins
+"""
+    )
 bot.run(TOKEN)
