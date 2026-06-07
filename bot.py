@@ -2492,7 +2492,7 @@ async def recuperer_investissement(
         multiplicateur = 0.50
         evenement = "⚠️ Krach financier (-50%)"
 
-       else:
+        else:
 
         cursor.execute("""
         UPDATE investissements
