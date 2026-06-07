@@ -1145,7 +1145,7 @@ cursor.execute("""
         noms[objet]
     ))
 
-    cursor.execute("""
+       cursor.execute("""
     UPDATE joueurs
     SET teromik_coins=?
     WHERE user_id=?
