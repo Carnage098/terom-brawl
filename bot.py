@@ -1026,7 +1026,7 @@ cursor.execute(
         (user_id,)
     )
 
-    joueur = cursor.fetchone()
+joueur = cursor.fetchone()
 
     if not joueur:
         await interaction.response.send_message(
