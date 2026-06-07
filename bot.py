@@ -366,7 +366,7 @@ cursor.execute("""
         str(adversaire.id)
     ))
 
-    cursor.execute("""
+cursor.execute("""
     INSERT INTO matchs (
         joueur_id,
         adversaire_id,
