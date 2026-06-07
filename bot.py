@@ -636,7 +636,7 @@ if coins_gagnes_joueur == 1000:
 
 if coins_gagnes_adv == 1000:
         jackpot_message += "\n🎰 JACKPOT DE L'ADVERSAIRE ! +1000 Coins"
-    await interaction.response.send_message(
+        await interaction.response.send_message(
         f"⚔️ Duel enregistré\n\n"
         f"🏆 Gagnant : {gagnant}\n"
         f"📈 Gain : +{gain} points\n\n"
