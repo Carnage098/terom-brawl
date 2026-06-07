@@ -114,6 +114,13 @@ INSERT OR IGNORE INTO jackpot_global (
 VALUES (1, 0)
 """)
 
+cursor.execute("""
+CREATE TABLE IF NOT EXISTS defis (
+    lanceur_id TEXT,
+    cible_id TEXT
+)
+""")
+
 conn.commit()
 def get_grade(points):
 
@@ -1793,6 +1800,107 @@ async def fortune(interaction: discord.Interaction):
 👑 Joueur le plus riche :
 {riche[0]} — {riche[1]} Coins
 """
+    )
+@bot.tree.command(
+    name="defier",
+    description="Défier un joueur"
+)
+async def defier(
+    interaction: discord.Interaction,
+    joueur: discord.Member
+):
+
+    if joueur.id == interaction.user.id:
+        await interaction.response.send_message(
+            "❌ Tu ne peux pas te défier toi-même."
+        )
+        return
+
+    cursor.execute("""
+    INSERT INTO defis (
+        lanceur_id,
+        cible_id
+    )
+    VALUES (?, ?)
+    """, (
+        str(interaction.user.id),
+        str(joueur.id)
+    ))
+
+    conn.commit()
+
+    await interaction.response.send_message(
+        f"""
+⚔️ Défi envoyé !
+
+👤 {joueur.mention}
+
+Il peut maintenant utiliser /accepter
+"""
+    )
+@bot.tree.command(
+    name="accepter",
+    description="Accepter un défi"
+)
+async def accepter(interaction: discord.Interaction):
+
+    cursor.execute("""
+    SELECT lanceur_id
+    FROM defis
+    WHERE cible_id=?
+    """, (
+        str(interaction.user.id),
+    ))
+
+    defi = cursor.fetchone()
+
+    if not defi:
+        await interaction.response.send_message(
+            "❌ Aucun défi en attente."
+        )
+        return
+
+    lanceur = await bot.fetch_user(
+        int(defi[0])
+    )
+
+    cursor.execute("""
+    DELETE FROM defis
+    WHERE cible_id=?
+    """, (
+        str(interaction.user.id),
+    ))
+
+    conn.commit()
+
+    await interaction.response.send_message(
+        f"""
+🔥 Duel accepté !
+
+⚔️ {interaction.user.mention}
+VS
+⚔️ {lanceur.mention}
+
+Utilisez ensuite /resultat pour déclarer le vainqueur.
+"""
+    )
+@bot.tree.command(
+    name="refuser",
+    description="Refuser un défi"
+)
+async def refuser(interaction: discord.Interaction):
+
+    cursor.execute("""
+    DELETE FROM defis
+    WHERE cible_id=?
+    """, (
+        str(interaction.user.id),
+    ))
+
+    conn.commit()
+
+    await interaction.response.send_message(
+        "❌ Défi refusé."
     )
 
 bot.run(TOKEN)
