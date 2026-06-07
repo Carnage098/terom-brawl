@@ -1107,7 +1107,7 @@ await interaction.response.send_message(
 return
 
     # BOOSTER VICTOIRES
-    if objet == "booster_victoires":
+if objet == "booster_victoires":
 
         nouvelles_victoires = joueur[3] + 50
 
