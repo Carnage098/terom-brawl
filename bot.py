@@ -1028,7 +1028,7 @@ cursor.execute(
 
 joueur = cursor.fetchone()
 
-    if not joueur:
+if not joueur:
         await interaction.response.send_message(
             "❌ Tu n'es pas inscrit.",
             ephemeral=True
