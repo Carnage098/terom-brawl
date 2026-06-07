@@ -29,6 +29,13 @@ CREATE TABLE IF NOT EXISTS joueurs (
     grade TEXT DEFAULT 'Recrue',
     teromik_coins INTEGER DEFAULT 0
 )
+try:
+    cursor.execute("""
+    ALTER TABLE joueurs
+    ADD COLUMN dernier_daily TEXT
+    """)
+except:
+    pass
 """)
 cursor.execute("""
 CREATE TABLE IF NOT EXISTS matchs (
@@ -670,4 +677,88 @@ async def fiche(
 🪙 TeRomik Coins : {data[8]}
 """
     )
+@bot.tree.command(
+    name="convertir",
+    description="Convertir des TeRomik Coins en points"
+)
+async def convertir(
+    interaction: discord.Interaction,
+    montant: int
+):
+
+    user_id = str(interaction.user.id)
+
+    cursor.execute(
+        "SELECT * FROM joueurs WHERE user_id=?",
+        (user_id,)
+    )
+
+    joueur = cursor.fetchone()
+
+    if not joueur:
+        await interaction.response.send_message(
+            "❌ Tu n'es pas inscrit.",
+            ephemeral=True
+        )
+        return
+
+    if montant <= 0:
+        await interaction.response.send_message(
+            "❌ Montant invalide.",
+            ephemeral=True
+        )
+        return
+
+    coins = joueur[8]
+
+    if montant > coins:
+        await interaction.response.send_message(
+            f"❌ Tu ne possèdes que {coins} TeRomik Coins.",
+            ephemeral=True
+        )
+        return
+
+    points_gagnes = montant // 100
+
+    if points_gagnes <= 0:
+        await interaction.response.send_message(
+            "❌ Il faut au moins 100 coins pour obtenir 1 point.",
+            ephemeral=True
+        )
+        return
+
+    nouveaux_coins = coins - montant
+    nouveaux_points = joueur[2] + points_gagnes
+
+    nouveau_grade = get_grade(nouveaux_points)
+
+    cursor.execute("""
+    UPDATE joueurs
+    SET points=?,
+        teromik_coins=?,
+        grade=?
+    WHERE user_id=?
+    """, (
+        nouveaux_points,
+        nouveaux_coins,
+        nouveau_grade,
+        user_id
+    ))
+
+    conn.commit()
+
+    await interaction.response.send_message(
+        f"""
+💱 Conversion effectuée
+
+🪙 Coins dépensés : {montant}
+
+📈 Points gagnés : +{points_gagnes}
+
+💰 Coins restants : {nouveaux_coins}
+
+🎖️ Grade actuel : {nouveau_grade}
+"""
+    )
+
 bot.run(TOKEN)
