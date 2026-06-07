@@ -939,11 +939,212 @@ async def shop(interaction: discord.Interaction):
     )
 @bot.tree.command(
     name="acheter",
-    description="Acheter un objet du shop"
+    description="Acheter un objet de la boutique"
 )
 async def acheter(
     interaction: discord.Interaction,
     objet: str
 ):
+
+    user_id = str(interaction.user.id)
+
+    cursor.execute(
+        "SELECT * FROM joueurs WHERE user_id=?",
+        (user_id,)
+    )
+
+    joueur = cursor.fetchone()
+
+    if not joueur:
+        await interaction.response.send_message(
+            "❌ Tu n'es pas inscrit.",
+            ephemeral=True
+        )
+        return
+
+    coins = joueur[8]
+
+    prix = {
+        "booster_points": 2000,
+        "booster_victoires": 10000,
+        "teromik_fan": 5000,
+        "terochasseur": 10000,
+        "maitre_tero": 25000,
+        "teroroi": 50000,
+        "tero_seigneur": 100000,
+        "terrorageux_all_time": 100000
+    }
+
+    objet = objet.lower()
+
+    if objet not in prix:
+        await interaction.response.send_message(
+            "❌ Objet introuvable.",
+            ephemeral=True
+        )
+        return
+
+    if coins < prix[objet]:
+        await interaction.response.send_message(
+            f"❌ Il te faut {prix[objet]} coins.",
+            ephemeral=True
+        )
+        return
+
+    coins -= prix[objet]
+
+    # BOOSTER POINTS
+    if objet == "booster_points":
+
+        roll = random.randint(1, 100)
+
+        if roll <= 50:
+            gain = random.randint(100, 500)
+
+        elif roll <= 80:
+            gain = random.randint(501, 2000)
+
+        elif roll <= 95:
+            gain = random.randint(2001, 5000)
+
+        elif roll <= 99:
+            gain = random.randint(5001, 8000)
+
+        else:
+            gain = random.randint(8001, 10000)
+
+        nouveaux_points = joueur[2] + gain
+
+        cursor.execute("""
+        UPDATE joueurs
+        SET points=?,
+            teromik_coins=?,
+            grade=?
+        WHERE user_id=?
+        """, (
+            nouveaux_points,
+            coins,
+            get_grade(nouveaux_points),
+            user_id
+        ))
+
+        citation = ""
+
+        if gain >= 8000:
+
+            citations = [
+                '📜 "C\'est impossible ! Personne n\'a pu gagner autant de points !" \n— Seito Kaiba\n\n💼 Woah ! Avec ça, tu peux acheter la Kaiba Corp !',
+                '📜 "Grand frère ! Quelqu\'un vient de gagner une quantité absurde de points !" \n— Mokuba Kaiba',
+                '📜 "Même Slifer le Dragon Céleste, le Dragon Ailé de Râ et Obélisk le Tourmenteur n\'avaient pas prévu cela !" \n— Marik Ishtar',
+                '📜 "ERREUR SYSTÈME : cette récompense dépasse les limites autorisées."\n— Kaiba Corp',
+                '📜 "ERREUR SYSTÈME : les comptables de la Kaiba Corp ont demandé un arrêt immédiat de cette distribution."\n— Kaiba Corp'
+            ]
+
+            citation = random.choice(citations)
+
+        elif gain >= 5000:
+
+            citation = (
+                '📜 "Même les dimensions tremblent devant une telle récompense."\n'
+                '— Tero-Seigneur des Dimensions'
+            )
+
+        elif gain >= 2000:
+
+            citation = (
+                '📜 "Voilà un exploit qui mérite le respect."\n'
+                '— Jack Atlas'
+            )
+
+        conn.commit()
+
+        await interaction.response.send_message(
+            f"""
+📈 Booster ouvert !
+
+🎲 Gain obtenu : +{gain} points
+
+💰 Coins restants : {coins}
+
+{citation}
+"""
+        )
+
+        return
+
+    # BOOSTER VICTOIRES
+    if objet == "booster_victoires":
+
+        nouvelles_victoires = joueur[3] + 50
+
+        cursor.execute("""
+        UPDATE joueurs
+        SET victoires=?,
+            teromik_coins=?
+        WHERE user_id=?
+        """, (
+            nouvelles_victoires,
+            coins,
+            user_id
+        ))
+
+        conn.commit()
+
+        await interaction.response.send_message(
+            f"""
+⚔️ Booster utilisé !
+
+🏆 +50 victoires
+
+💰 Coins restants : {coins}
+"""
+        )
+
+        return
+
+    # TITRES ET TROPHÉE
+
+    noms = {
+        "teromik_fan": "❤️ TeRomik Fan",
+        "terochasseur": "⚔️ Terochasseur de Duels",
+        "maitre_tero": "🔥 Maître Tero",
+        "teroroi": "👑 TeroRoi de l'Arène",
+        "tero_seigneur": "🌌 Tero-Seigneur des Dimensions",
+        "terrorageux_all_time": "🏆 Terrorageux All Time"
+    }
+
+    cursor.execute("""
+    INSERT INTO inventaire (
+        user_id,
+        objet
+    )
+    VALUES (?, ?)
+    """, (
+        user_id,
+        noms[objet]
+    ))
+
+    cursor.execute("""
+    UPDATE joueurs
+    SET teromik_coins=?
+    WHERE user_id=?
+    """, (
+        coins,
+        user_id
+    ))
+
+    conn.commit()
+
+    await interaction.response.send_message(
+        f"""
+✅ Achat effectué !
+
+Objet obtenu :
+
+{noms[objet]}
+
+💰 Coins restants : {coins}
+"""
+    )
 
 bot.run(TOKEN)
