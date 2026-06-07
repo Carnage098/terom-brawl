@@ -2341,5 +2341,186 @@ async def collecter_interets(
 {nouveau_solde} Coins
 """
     )
+@bot.tree.command(
+    name="investir",
+    description="Investir des Coins sur les marchés"
+)
+async def investir(
+    interaction: discord.Interaction,
+    montant: int
+):
+
+    user_id = str(interaction.user.id)
+
+    if montant <= 0:
+        await interaction.response.send_message(
+            "❌ Montant invalide."
+        )
+        return
+
+    cursor.execute(
+        "SELECT * FROM joueurs WHERE user_id=?",
+        (user_id,)
+    )
+
+    joueur = cursor.fetchone()
+
+    if not joueur:
+        await interaction.response.send_message(
+            "❌ Tu n'es pas inscrit."
+        )
+        return
+
+    coins = joueur[8]
+
+    if montant > coins:
+        await interaction.response.send_message(
+            f"❌ Tu ne possèdes que {coins} Coins."
+        )
+        return
+
+    cursor.execute("""
+    INSERT OR IGNORE INTO investissements (
+        user_id,
+        montant
+    )
+    VALUES (?, 0)
+    """, (
+        user_id,
+        0
+    ))
+
+    cursor.execute("""
+    UPDATE investissements
+    SET montant = montant + ?
+    WHERE user_id=?
+    """, (
+        montant,
+        user_id
+    ))
+
+    cursor.execute("""
+    UPDATE joueurs
+    SET teromik_coins=?
+    WHERE user_id=?
+    """, (
+        coins - montant,
+        user_id
+    ))
+
+    conn.commit()
+
+    await interaction.response.send_message(
+        f"""
+📈 Investissement réalisé
+
+💰 Montant investi : {montant} Coins
+
+📜 "Les marchés sont imprévisibles..."
+"""
+    )
+@bot.tree.command(
+    name="recuperer_investissement",
+    description="Récupérer ton investissement"
+)
+async def recuperer_investissement(
+    interaction: discord.Interaction
+):
+
+    user_id = str(interaction.user.id)
+
+    cursor.execute("""
+    SELECT montant
+    FROM investissements
+    WHERE user_id=?
+    """, (user_id,))
+
+    data = cursor.fetchone()
+
+    if not data:
+        await interaction.response.send_message(
+            "❌ Aucun investissement."
+        )
+        return
+
+    montant = data[0]
+
+    if montant <= 0:
+        await interaction.response.send_message(
+            "❌ Aucun investissement."
+        )
+        return
+
+    roll = random.randint(1, 1000)
+
+    if roll <= 400:
+        multiplicateur = 1.10
+        evenement = "📈 Hausse du marché (+10%)"
+
+    elif roll <= 650:
+        multiplicateur = 1.25
+        evenement = "🚀 Forte croissance (+25%)"
+
+    elif roll <= 800:
+        multiplicateur = 1.50
+        evenement = "💎 Explosion boursière (+50%)"
+
+    elif roll <= 900:
+        multiplicateur = 2.00
+        evenement = "🔥 Investissement légendaire (+100%)"
+
+    elif roll <= 980:
+        multiplicateur = 0.75
+        evenement = "📉 Correction du marché (-25%)"
+
+    elif roll <= 999:
+        multiplicateur = 0.50
+        evenement = "⚠️ Krach financier (-50%)"
+
+    else:
+        multiplicateur = 0.10
+        evenement = "💥 CRISE ÉCONOMIQUE (-90%)"
+
+    gain_final = int(montant * multiplicateur)
+
+    cursor.execute(
+        "SELECT * FROM joueurs WHERE user_id=?",
+        (user_id,)
+    )
+
+    joueur = cursor.fetchone()
+
+    nouveaux_coins = joueur[8] + gain_final
+
+    cursor.execute("""
+    UPDATE joueurs
+    SET teromik_coins=?
+    WHERE user_id=?
+    """, (
+        nouveaux_coins,
+        user_id
+    ))
+
+    cursor.execute("""
+    UPDATE investissements
+    SET montant=0
+    WHERE user_id=?
+    """, (user_id,))
+
+    conn.commit()
+
+    await interaction.response.send_message(
+        f"""
+📈 Résultat de l'investissement
+
+{evenement}
+
+💰 Investissement initial : {montant}
+
+💵 Montant récupéré : {gain_final}
+
+🪙 Nouveau solde : {nouveaux_coins}
+"""
+    )
 
 bot.run(TOKEN)
