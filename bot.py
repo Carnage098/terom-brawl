@@ -1200,7 +1200,6 @@ cursor.execute("""
         coins,
         user_id
     ))
-
 conn.commit()
 
     await interaction.response.send_message(
