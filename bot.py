@@ -1104,7 +1104,7 @@ await interaction.response.send_message(
 """
 )
 
-        return
+    return
 
     # BOOSTER VICTOIRES
     if objet == "booster_victoires":
