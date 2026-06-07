@@ -928,10 +928,10 @@ async def roulette(
         user_id
     ))
 
-    conn.commit()
+   conn.commit()
 
-    await interaction.response.send_message(
-        f"""
+await interaction.response.send_message(
+    f"""
 🎲 Roulette TeRom-Brawl
 
 👤 {interaction.user.mention}
@@ -944,7 +944,7 @@ async def roulette(
 
 💼 Nouveau solde : {nouveaux_coins}
 """
-    )
+)
 @bot.tree.command(
     name="shop",
     description="Voir la boutique TeRom-Brawl"
