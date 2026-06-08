@@ -1943,6 +1943,13 @@ async def fortune(interaction: discord.Interaction):
     """)
     riche = cursor.fetchone()
 
+if riche:
+    nom_riche = riche[0]
+    coins_riche = riche[1]
+else:
+    nom_riche = "Aucun"
+    coins_riche = 0
+
     await interaction.response.send_message(
         f"""
 💰 **Fortune de TeRom-Brawl**
