@@ -181,11 +181,14 @@ async def on_ready():
 
     print(f"✅ Connecté en tant que {bot.user}")
 
+    cursor.execute("SELECT COUNT(*) FROM joueurs")
+    print("NB JOUEURS :", cursor.fetchone()[0])
+
     try:
         synced = await bot.tree.sync()
         print(f"✅ {len(synced)} commandes synchronisées")
     except Exception as e:
-        print(e)
+        print("ERREUR SYNC :", e)
 
 @bot.tree.command(
     name="inscription",
