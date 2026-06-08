@@ -1950,7 +1950,7 @@ else:
     nom_riche = "Aucun"
     coins_riche = 0
 
-    await interaction.response.send_message(
+await interaction.response.send_message(
         f"""
 💰 **Fortune de TeRom-Brawl**
 
