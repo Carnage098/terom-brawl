@@ -1943,12 +1943,12 @@ async def fortune(interaction: discord.Interaction):
     """)
     riche = cursor.fetchone()
 
-if riche:
-    nom_riche = riche[0]
-    coins_riche = riche[1]
-else:
-    nom_riche = "Aucun"
-    coins_riche = 0
+    if riche:
+        nom_riche = riche[0]
+        coins_riche = riche[1]
+    else:
+        nom_riche = "Aucun"
+        coins_riche = 0
 
     await interaction.response.send_message(
         f"""
@@ -1964,8 +1964,9 @@ else:
 {moyenne} Coins
 
 👑 Joueur le plus riche :
-{riche[0]} — {riche[1]} Coins
-""", ephemeral=True
+{nom_riche} — {coins_riche} Coins
+""",
+        ephemeral=True
     )
 @bot.tree.command(
     name="defier",
