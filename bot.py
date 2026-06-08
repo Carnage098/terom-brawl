@@ -2770,5 +2770,14 @@ async def refuser_guerre(
     await interaction.response.send_message(
         "❌ Guerre économique refusée."
     )
+@bot.tree.command(name="debug_joueurs")
+async def debug_joueurs(interaction: discord.Interaction):
+
+    cursor.execute("SELECT * FROM joueurs")
+    joueurs = cursor.fetchall()
+
+    await interaction.response.send_message(
+        f"{joueurs}"
+    )
 
 bot.run(TOKEN)
