@@ -1595,7 +1595,7 @@ async def equiper(
         await interaction.response.send_message(
             "❌ Tu ne possèdes pas ce titre.",
             ephemeral=True
-        ,ephemeral=True)
+        )
         return
 
     cursor.execute("""
