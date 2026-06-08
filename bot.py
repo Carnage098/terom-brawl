@@ -2787,5 +2787,14 @@ async def debug_joueurs(interaction: discord.Interaction):
     await interaction.response.send_message(
         f"{joueurs}",ephemeral=True
     )
+@bot.tree.command(name="debug_fiche")
+async def debug_fiche(interaction: discord.Interaction, joueur: discord.Member):
 
+    cursor.execute("SELECT user_id, pseudo FROM joueurs")
+    joueurs = cursor.fetchall()
+
+    await interaction.response.send_message(
+        f"ID recherché : {joueur.id}\n\nBase : {joueurs}",
+        ephemeral=True
+    )
 bot.run(TOKEN)
