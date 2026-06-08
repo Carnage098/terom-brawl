@@ -723,17 +723,6 @@ async def resultat(
     if coins_gagnes_adv == 1000:
         jackpot_message += "\n🎰 JACKPOT DE L'ADVERSAIRE ! +1000 Coins"
 
-    await interaction.response.send_message(
-        f"⚔️ Duel enregistré\n\n"
-        f"🏆 Gagnant : {gagnant}\n"
-        f"📈 Gain : +{gain} points\n\n"
-        f"💀 Perdant : {perdant}\n"
-        f"📉 Perte : -{perte} points\n\n"
-        f"👤 {interaction.user.display_name} : +{coins_gagnes_joueur} Coins\n"
-        f"👤 {adversaire.display_name} : +{coins_gagnes_adv} Coins\n"
-        f"{jackpot_message}\n\n"
-        f"🎮 Plateforme : {plateforme.name}"
-    ,ephemeral=True)
 @bot.tree.command(
     name="classement",
     description="Voir le classement TeRom-Brawl"
