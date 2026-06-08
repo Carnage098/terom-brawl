@@ -1712,7 +1712,8 @@ async def mes_duels(interaction: discord.Interaction):
             f"🏆 {resultat}\n"
             f"💻 {plateforme}\n"
             f"📅 {date}\n\n"
-       ,ephemeral=True )
+       ,
+            ephemeral=True )
 
     await interaction.response.send_message(message)
 
