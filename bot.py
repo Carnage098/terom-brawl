@@ -1057,7 +1057,7 @@ async def daily(interaction: discord.Interaction):
             await interaction.response.send_message(
                 f"⏳ Tu pourras récupérer ton prochain daily dans {heures}h {minutes}min.",
                 ephemeral=True
-            ,ephemeral=True)
+          )
             return
 
     gain = random.randint(250, 1000)
