@@ -708,7 +708,7 @@ async def resultat(
         f"{jackpot_message}"
         f"{guerre_message}\n\n"
         f"🎮 Plateforme : {plateforme.name}"
-    )
+    ,ephemeral=True)
 
     conn.commit()
 
@@ -730,7 +730,7 @@ async def resultat(
         f"👤 {adversaire.display_name} : +{coins_gagnes_adv} Coins\n"
         f"{jackpot_message}\n\n"
         f"🎮 Plateforme : {plateforme.name}"
-    )
+    ,ephemeral=True)
 @bot.tree.command(
     name="classement",
     description="Voir le classement TeRom-Brawl"
@@ -748,7 +748,7 @@ async def classement(interaction: discord.Interaction):
 
     if not joueurs:
         await interaction.response.send_message(
-            "❌ Aucun joueur inscrit."
+            "❌ Aucun joueur inscrit.",ephemeral=True
         )
         return
 
@@ -812,7 +812,7 @@ async def stats(interaction: discord.Interaction):
 👑 Leader actuel : **{leader_nom}**
 
 📈 Points du leader : **{leader_points}**
-"""
+""",ephemeral=True
     )
 
 @bot.tree.command(
@@ -835,7 +835,7 @@ async def historique(interaction: discord.Interaction):
 
     if not matchs:
         await interaction.response.send_message(
-            "❌ Aucun duel enregistré."
+            "❌ Aucun duel enregistré.",ephemeral=True
         )
         return
 
@@ -892,7 +892,7 @@ async def fiche(
 
     if not data:
         await interaction.response.send_message(
-            "❌ Ce joueur n'est pas inscrit."
+            "❌ Ce joueur n'est pas inscrit.",ephemeral=True
         )
         return
 
@@ -930,7 +930,7 @@ async def fiche(
 
 🔥 Série : {data[5]}
 🪙 TeRomik Coins : {data[8]}
-"""
+""",ephemeral=True
     )
 @bot.tree.command(
     name="convertir",
@@ -1013,7 +1013,7 @@ async def convertir(
 💰 Coins restants : {nouveaux_coins}
 
 🎖️ Grade actuel : {nouveau_grade}
-"""
+""",ephemeral=True
     )
 @bot.tree.command(
     name="daily",
@@ -1057,7 +1057,7 @@ async def daily(interaction: discord.Interaction):
             await interaction.response.send_message(
                 f"⏳ Tu pourras récupérer ton prochain daily dans {heures}h {minutes}min.",
                 ephemeral=True
-            )
+            ,ephemeral=True)
             return
 
     gain = random.randint(250, 1000)
@@ -1084,7 +1084,7 @@ async def daily(interaction: discord.Interaction):
 🪙 +{gain} TeRomik Coins
 
 💰 Nouveau solde : {nouveaux_coins}
-"""
+""",ephemeral=True
     )
 @bot.tree.command(
     name="roulette",
@@ -1249,7 +1249,7 @@ async def roulette(
 💼 Nouveau solde : {nouveaux_coins}
 
 {jackpot_message}
-"""
+""",ephemeral=True
     )
 @bot.tree.command(
     name="shop",
@@ -1276,7 +1276,7 @@ async def shop(interaction: discord.Interaction):
 🌌 Tero-Seigneur des Dimensions — 100000 Coins
 
 🏆 Terrorageux All Time — 100000 Coins
-"""
+""",ephemeral=True
     )
 @bot.tree.command(
     name="acheter",
@@ -1475,7 +1475,7 @@ async def acheter(
 📈 +1000 Points
 
 💰 Coins restants : {coins}
-"""
+""",ephemeral=True
         )
 
         return
@@ -1524,7 +1524,7 @@ async def acheter(
 {citation}
 
 💰 Coins restants : {coins}
-"""
+""",ephemeral=True
         )
 
         return
@@ -1571,7 +1571,7 @@ Objet obtenu :
 {noms[objet]}
 
 💰 Coins restants : {coins}
-"""
+""",ephemeral=True
     )
 
 @bot.tree.command(
@@ -1595,7 +1595,7 @@ async def equiper(
         await interaction.response.send_message(
             "❌ Tu ne possèdes pas ce titre.",
             ephemeral=True
-        )
+        ,ephemeral=True)
         return
 
     cursor.execute("""
@@ -1667,7 +1667,7 @@ async def inscrire_joueur(
 📈 Points : 0
 🪙 Coins : 0
 """
-    )
+   ,ephemeral=True )
 
 
 @bot.tree.command(
@@ -1693,7 +1693,7 @@ async def mes_duels(interaction: discord.Interaction):
 
     if not duels:
         await interaction.response.send_message(
-            "❌ Aucun duel enregistré."
+            "❌ Aucun duel enregistré.",ephemeral=True
         )
         return
 
@@ -1712,7 +1712,7 @@ async def mes_duels(interaction: discord.Interaction):
             f"🏆 {resultat}\n"
             f"💻 {plateforme}\n"
             f"📅 {date}\n\n"
-        )
+       ,ephemeral=True )
 
     await interaction.response.send_message(message)
 
@@ -1746,7 +1746,7 @@ async def rivalite(
 
     if not duels:
         await interaction.response.send_message(
-            "❌ Aucun affrontement trouvé."
+            "❌ Aucun affrontement trouvé.",ephemeral=True
         )
         return
 
@@ -1846,7 +1846,7 @@ async def legendes(interaction: discord.Interaction):
 
 💰 Magnat des Coins
 {roi_coins[0]} — {roi_coins[1]} Coins
-"""
+""",ephemeral=True
     )
 @bot.tree.command(
     name="jackpot",
@@ -1888,7 +1888,7 @@ async def topcoins(interaction: discord.Interaction):
 
     if not joueurs:
         await interaction.response.send_message(
-            "❌ Aucun joueur inscrit."
+            "❌ Aucun joueur inscrit.", ephemeral=True
         )
         return
 
@@ -1911,7 +1911,7 @@ async def topcoins(interaction: discord.Interaction):
             f"🪙 {coins} Coins\n\n"
         )
 
-    await interaction.response.send_message(message)
+    await interaction.response.send_message(message, ephemeral=True)
 
 
 
@@ -1958,7 +1958,7 @@ async def fortune(interaction: discord.Interaction):
 
 👑 Joueur le plus riche :
 {riche[0]} — {riche[1]} Coins
-"""
+""", ephemeral=True
     )
 @bot.tree.command(
     name="defier",
@@ -2166,7 +2166,7 @@ async def depot(
 
     if montant <= 0:
         await interaction.response.send_message(
-            "❌ Montant invalide."
+            "❌ Montant invalide.",ephemeral=True
         )
         return
 
@@ -2179,7 +2179,7 @@ async def depot(
 
     if not joueur:
         await interaction.response.send_message(
-            "❌ Tu n'es pas inscrit."
+            "❌ Tu n'es pas inscrit.",ephemeral=True
         )
         return
 
@@ -2187,7 +2187,7 @@ async def depot(
 
     if montant > coins:
         await interaction.response.send_message(
-            f"❌ Tu ne possèdes que {coins} Coins."
+            f"❌ Tu ne possèdes que {coins} Coins.",ephemeral=True
         )
         return
 
@@ -2249,7 +2249,7 @@ async def retrait(
 
     if montant <= 0:
         await interaction.response.send_message(
-            "❌ Montant invalide."
+            "❌ Montant invalide.",ephemeral=True
         )
         return
 
@@ -2263,7 +2263,7 @@ async def retrait(
 
     if not data:
         await interaction.response.send_message(
-            "❌ Aucun compte bancaire."
+            "❌ Aucun compte bancaire.",ephemeral=True
         )
         return
 
@@ -2271,7 +2271,7 @@ async def retrait(
 
     if montant > solde:
         await interaction.response.send_message(
-            f"❌ Tu ne possèdes que {solde} Coins en banque."
+            f"❌ Tu ne possèdes que {solde} Coins en banque.", ephemeral=True
         )
         return
 
@@ -2311,7 +2311,7 @@ async def retrait(
 ➕ {montant} Coins
 
 💰 Solde bancaire restant : {solde - montant}
-"""
+""", ephemeral=True
     )
 @bot.tree.command(
     name="collecter_interets",
@@ -2333,7 +2333,7 @@ async def collecter_interets(
 
     if not data:
         await interaction.response.send_message(
-            "❌ Tu ne possèdes pas de compte bancaire."
+            "❌ Tu ne possèdes pas de compte bancaire.",ephemeral=True
         )
         return
 
@@ -2405,7 +2405,7 @@ async def investir(
 
     if montant <= 0:
         await interaction.response.send_message(
-            "❌ Montant invalide."
+            "❌ Montant invalide.",ephemeral=True
         )
         return
 
@@ -2418,7 +2418,7 @@ async def investir(
 
     if not joueur:
         await interaction.response.send_message(
-            "❌ Tu n'es pas inscrit."
+            "❌ Tu n'es pas inscrit.",ephemeral=True
         )
         return
 
@@ -2426,7 +2426,7 @@ async def investir(
 
     if montant > coins:
         await interaction.response.send_message(
-            f"❌ Tu ne possèdes que {coins} Coins."
+            f"❌ Tu ne possèdes que {coins} Coins.", ephemeral=True
         )
         return
 
@@ -2629,7 +2629,7 @@ async def marche(interaction: discord.Interaction):
 
 ⚠️ Risque de crise :
 {risque}
-"""
+""", ephemeral=True
     )
 @bot.tree.command(
     name="declencher_guerre",
@@ -2645,7 +2645,7 @@ async def declencher_guerre(
 
     if montant <= 0:
         await interaction.response.send_message(
-            "❌ Montant invalide."
+            "❌ Montant invalide.",ephemeral=True
         )
         return
 
@@ -2658,13 +2658,13 @@ async def declencher_guerre(
 
     if not data:
         await interaction.response.send_message(
-            "❌ Tu n'es pas inscrit."
+            "❌ Tu n'es pas inscrit.",ephemeral=True
         )
         return
 
     if data[8] < montant:
         await interaction.response.send_message(
-            "❌ Tu n'as pas assez de Coins."
+            "❌ Tu n'as pas assez de Coins.",ephemeral=True
         )
         return
 
@@ -2768,7 +2768,7 @@ async def refuser_guerre(
         del guerres_actives[user_id]
 
     await interaction.response.send_message(
-        "❌ Guerre économique refusée."
+        "❌ Guerre économique refusée.", ephemeral=True
     )
 @bot.tree.command(name="debug_joueurs")
 async def debug_joueurs(interaction: discord.Interaction):
@@ -2777,7 +2777,7 @@ async def debug_joueurs(interaction: discord.Interaction):
     joueurs = cursor.fetchall()
 
     await interaction.response.send_message(
-        f"{joueurs}"
+        f"{joueurs}",ephemeral=True
     )
 
 bot.run(TOKEN)
